@@ -1,0 +1,83 @@
+# Reference: https://wiki.archlinux.org/index.php/Color_Bash_Prompt
+# Downloaded from: https://gist.github.com/scottweaver/3278629
+# See also: console_codes(4)
+#
+# Meh.  This should *REALLY* not be necessary, but '\e' and the
+# like don't seem to work.
+#
+# This is '<ctrl>-v<esc>'.
+Esc=''
+
+# Reset
+Color_Off="${Esc}[0m"       # Text Reset
+
+# Regular Colors
+Black="${Esc}[0;30m"        # Black
+Red="${Esc}[0;31m"          # Red
+Green="${Esc}[0;32m"        # Green
+Yellow="${Esc}[0;33m"       # Yellow
+Blue="${Esc}[0;34m"         # Blue
+Purple="${Esc}[0;35m"       # Purple
+Cyan="${Esc}[0;36m"         # Cyan
+White="${Esc}[0;37m"        # White
+
+# Bold
+BBlack="${Esc}[1;30m"       # Black
+BRed="${Esc}[1;31m"         # Red
+BGreen="${Esc}[1;32m"       # Green
+BYellow="${Esc}[1;33m"      # Yellow
+BBlue="${Esc}[1;34m"        # Blue
+BPurple="${Esc}[1;35m"      # Purple
+BCyan="${Esc}[1;36m"        # Cyan
+BWhite="${Esc}[1;37m"       # White
+
+# Underline
+UBlack="${Esc}[4;30m"       # Black
+URed="${Esc}[4;31m"         # Red
+UGreen="${Esc}[4;32m"       # Green
+UYellow="${Esc}[4;33m"      # Yellow
+UBlue="${Esc}[4;34m"        # Blue
+UPurple="${Esc}[4;35m"      # Purple
+UCyan="${Esc}[4;36m"        # Cyan
+UWhite="${Esc}[4;37m"       # White
+
+# Background
+On_Black="${Esc}[40m"       # Black
+On_Red="${Esc}[41m"         # Red
+On_Green="${Esc}[42m"       # Green
+On_Yellow="${Esc}[43m"      # Yellow
+On_Blue="${Esc}[44m"        # Blue
+On_Purple="${Esc}[45m"      # Purple
+On_Cyan="${Esc}[46m"        # Cyan
+On_White="${Esc}[47m"       # White
+
+# High Intensity
+IBlack="${Esc}[0;90m"       # Black
+IRed="${Esc}[0;91m"         # Red
+IGreen="${Esc}[0;92m"       # Green
+IYellow="${Esc}[0;93m"      # Yellow
+IBlue="${Esc}[0;94m"        # Blue
+IPurple="${Esc}[0;95m"      # Purple
+ICyan="${Esc}[0;96m"        # Cyan
+IWhite="${Esc}[0;97m"       # White
+
+# Bold High Intensity
+BIBlack="${Esc}[1;90m"      # Black
+BIRed="${Esc}[1;91m"        # Red
+BIGreen="${Esc}[1;92m"      # Green
+BIYellow="${Esc}[1;93m"     # Yellow
+BIBlue="${Esc}[1;94m"       # Blue
+BIPurple="${Esc}[1;95m"     # Purple
+BICyan="${Esc}[1;96m"       # Cyan
+BIWhite="${Esc}[1;97m"      # White
+
+# High Intensity backgrounds
+On_IBlack="${Esc}[0;100m"   # Black
+On_IRed="${Esc}[0;101m"     # Red
+On_IGreen="${Esc}[0;102m"   # Green
+On_IYellow="${Esc}[0;103m"  # Yellow
+On_IBlue="${Esc}[0;104m"    # Blue
+On_IPurple="${Esc}[0;105m"  # Purple
+On_ICyan="${Esc}[0;106m"    # Cyan
+On_IWhite="${Esc}[0;107m"   # White
+

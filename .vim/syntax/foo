@@ -1,0 +1,69 @@
+left(<val>, <len>)
+concat(<val1>,<val2> [,...,<valn>])
+f-cookie-id(<val>)
+eliminate(<chars>, <val>)
+map(<from>,<to>,<val>)
+ltrim(<str>,<substr>)
+rtrim(<str>,<substr>)
+lowercase(<val>)
+uppercase(<val>)
+smashid(<val>)
+atoi(<val>)
+atol(<val>)
+ltoa(<val>)
+itoa(<val>)
+decodeurl(<val>)
+striptags(<val>)
+unobfuscate(<val>)
+url(<string>,[<n>])
+urldomain(<string>,[<n>])
+urldomainfp(<string>,[<n>,<nnfpo>])
+urltld(<string>,[<n>])
+url-list(<string>)
+urldomain-list(<string>)
+urldomainfp-list(<string>,[<nnfpo>])
+urltld-list(<string>)
+nurls(<string>)
+nmatches(<string1>,<string2>)
+rand
+ytenure
+min(<val1>, <val2>, ...)
+max(<val1>, <val2>, ...)
+nvl(<val1>, <val2> [, <val3>])
+nvl(a, b)    ->  (null(a) ? b : a) 
+nvl(a, b, c) ->  (null(a) ? b : c) 
+slot-state(<filter>,<key>)
+SLOT_STATE_ERR
+SLOT_STATE_OK
+SLOT_STATE_OVER
+SLOT_STATE_TIME
+request-method
+kwtoa(<key>)
+kwtol(<key>)
+setkwa(<key>,<val>)
+env-out-list(<name>)
+var-list(<name>)
+
+samecase
+toupper
+tolower
+smash
+tolong
+
+==
+!=
+=~
+!~
+>
+<
+>=
+<=
+
+~~
+
+:=
+$
+
+<string>
+null
+
