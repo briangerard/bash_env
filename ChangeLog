@@ -1,0 +1,7 @@
+Version 1.0.0
+* brian, 2013/09/15
+*	* First versioned release.
+*	* Changed old bourne-compatible '[ ... ]' conditionals to
+*	  the bash-specific '[[ ... ]]' form.
+* 	* Made all function declarations the 'function <name> ()'
+*	  format.
