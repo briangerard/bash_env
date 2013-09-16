@@ -3,10 +3,10 @@
 # for examples
 
 # Source global definitions
-if   [ -f /etc/bashrc ]
+if   [[ -f /etc/bashrc ]]
 then
 	. /etc/bashrc
-elif [ -f /etc/bash.bashrc ]
+elif [[ -f /etc/bash.bashrc ]]
 then
 	. /etc/bash.bashrc
 fi
@@ -62,13 +62,24 @@ fi
 export PATH=/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/X11R6/bin:~/bin:~
 
 ###
+# Standard directories I always use
+export MYDIR=("bin" "devel" "env" "personal" "tmp" "workstuff")
+BIN=0
+DEVEL=1
+ENV=2
+PERSONAL=3
+TMP=4
+WORK=5
+
+
+###
 # Only need the rest of this if I'm working interactively ($PS1 is set)
-if [ -n "$PS1" ] # { INTERACTIVE_COND
+if [[ -n "$PS1" ]] # { INTERACTIVE_COND
 then
 
     #####
     #
-    # General shell options
+    # General shell options {
     #
     ###
 
@@ -91,6 +102,9 @@ then
     # match all files and zero or more directories and subdirectories.
     shopt -s globstar
 
+    # Match case-insensitively in [[ ]] regexes
+    shopt -s nocasematch
+
     # Allow me to cd using variables... 
     shopt -s cdable_vars
     
@@ -105,7 +119,7 @@ then
     ###
     # Where to find the One True Editor(tm)...
     EDITOR=$(which vim 2> /dev/null)
-    if [ $? -ne 0 ]
+    if [[ $? -ne 0 ]]
     then
         EDITOR=$(which vi)
     fi
@@ -135,7 +149,8 @@ then
                         )[0],
                         "\n"'
              )
-    if [ -x "$LESS_SH" ]
+    if [[   -n "$LESS_SH" \
+         && -x "$LESS_SH" ]]
     then
         alias l=$LESS_SH
     else
@@ -163,7 +178,7 @@ then
 
     ###
     #
-    # /General shell options
+    # /General shell options }
     #
     #####
 
@@ -180,10 +195,10 @@ then
     ###
     # Let's see what the state of the ssh-agent is.  Only to be done on
     # the home host, and only assuming we can get ssh-agent stuff going.
-	if [    "${THIS_HOST[$NODENAME]}" = "$HOME_HOST" \
-         -a -x "$MYSSHADD"   \
-         -a -x "$MYSSHAGENT" \
-       ] # { SSHAGENT_COND
+	if [[    "${THIS_HOST[$NODENAME]}" = "$HOME_HOST" \
+         && -x "$MYSSHADD"   \
+         && -x "$MYSSHAGENT" \
+       ]] # { SSHAGENT_COND
     then
         $MYSSHADD -l > /dev/null 2>&1
         case $? in
@@ -210,6 +225,10 @@ then
     ###
     
     ###
+    # This is included in the default Ubuntu .bashrc; holding it here
+    # in anticipation of eventually figuring out what I want to do with
+    # it.  :)
+    #
     # set variable identifying the chroot you work in (used in the prompt below)
     ##if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]
     ##then
@@ -218,12 +237,12 @@ then
 
     ###
     # See if I'm inside a screen or tmux session.
-    if [ "x$TERM" = "xscreen" ]
+    if [[ ${TERM:-NO_TERM} = "screen" ]]
     then
-        if [ -n "$STY" ]
+        if [[ -n "$STY" ]]
         then
             ScreenName=`echo $STY | sed -e 's/[^.][^.]*\.\(.*\)$/\1/'`
-        elif [ -n "$TMUX" ]
+        elif [[ -n "$TMUX" ]]
         then
             ScreenName=`echo $TMUX | sed -e 's/.*\/\([^,][^,]*\),[^,][^,]*,\(.*\)/\1:\2/'`
         else
@@ -233,10 +252,15 @@ then
 
     ###
     # Set up colors, if the file is there
-    if [ -f "$HOME/.bash_colors" ]
+    if [[ -f "$HOME/.bash_colors" ]]
     then
         . $HOME/.bash_colors
     else
+        # This color scheme is largely designed to go well on a terminal with
+        # a black (or all-but-black) background and yellow-ish foreground (text).
+        # The best one I've found so far is something closely akin to the color
+        # used for unique items in Diablo II: RGB:#D49E43 / HSV:37,175,212
+        # 
         # If there's no .bash_colors, just define the ones I need in the prompt
         # I'm setting $Esc to <ctrl>-v<esc> because I've run into environments
         # where '\e' and '\033' haven't worked, and I haven't been motivated
@@ -272,6 +296,10 @@ then
     # 
     # ...except for the 'lightning bolt', which can be seen on
     # http://www.fileformat.info/info/charset/UTF-8/list.htm?start=8192
+    #
+    # NOTE: I have not yet found a Linux font that includes all of these
+    # characters.  They work on Mac Terminals, but not on Linux.  The
+    # search continues.
     
     # UTF-8 glowing star
     RepoClean='\xf0\x9f\x8c\x9f '
@@ -293,6 +321,7 @@ then
     
     ###
     # Credit where credit is due here.
+    #
     # I first saw this in John Fowler's (fowler at TEH webassignZ DOTZ net) bash
     # prompt.  He passed along the original notes he received from Chris Kershaw
     # (ckershaw at TEH webassignZ DOTZ net).
@@ -305,8 +334,9 @@ then
     # I modified it to always decorate the prompt even when git isn't present,
     # and tracked down the UTF-8 chars used above to make it all purty.  Aside
     # from that, it's just some coloring and aesthetic tweaks to suit me.
-    function git_branch_and_user {
-        if [ "${GIT}" = "NO_GIT" ]
+    #
+    function gitStatusTag () {
+        if [[ $GIT = "NO_GIT" ]]
         then
             echo -e $NotARepo
         else
@@ -319,7 +349,7 @@ then
                 RemotePattern="# Your branch is (.*) of"
                 DivergePattern="# Your branch and (.*) have diverged"
 
-                if [[ ! ${GitStatus}} =~ "working directory clean" ]]
+                if [[ ! ( ${GitStatus} =~ "working directory clean" ) ]]
                 then
                     State=$RepoChanged
                 else
@@ -327,7 +357,7 @@ then
                 fi
 
                 # Add an else if or two here if you want to get more specific
-                if [[ ${GitStatus} =~ ${RemotePattern} ]]
+                if [[ $GitStatus =~ $RemotePattern ]]
                 then
                     if [[ ${BASH_REMATCH[1]} == "ahead" ]]
                     then
@@ -338,13 +368,13 @@ then
                 fi
 
                 # Thing have gone sideways.  Someone needs to fix it.
-                if [[ ${GitStatus} =~ ${DivergePattern} ]]
+                if [[ $GitStatus =~ $DivergePattern ]]
                 then
                     Remote=$Divergent
                 fi
 
                 # Let me know what branch I'm on.
-                if [[ ${GitStatus} =~ ${BranchPattern} ]]
+                if [[ $GitStatus =~ $BranchPattern ]]
                 then
                     Branch="${BIGreen}${BASH_REMATCH[1]}${Color_Off}"
                 fi
@@ -379,10 +409,10 @@ then
     # Wrapping all of this in a function so I can use PROMPT_COMMAND (see bash(1)).  That
     # means the git status will be refreshed as I go.
     # 
-    currentprompt() {
+    function currentprompt () {
         PS1="${IGreen}${ScreenName:+"#${ScreenName}# "}${BWhite}${THIS_HOST[$SHORTNAME]}${Color_Off}\
 ${IS_VM:+${BRed}[VM]${Color_Off}} - \
-${Purple}\w${Color_Off}$(git_branch_and_user) : \
+${Purple}\w${Color_Off}$(gitStatusTag) : \
 ${Cyan}\!${Color_Off}\
 \nYes, My Liege? \$ "
 }
@@ -401,7 +431,7 @@ ${Cyan}\!${Color_Off}\
     ###
 
     # enable color support of ls and also add handy aliases
-    if [ -x /usr/bin/dircolors ]
+    if [[ -x /usr/bin/dircolors ]]
     then
         test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
         alias la='ls --color=auto -A'
@@ -420,7 +450,7 @@ ${Cyan}\!${Color_Off}\
 
     # Add an "alert" alias for long running commands.  Use like so:
     #   sleep 10; alert
-    alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+    alias alert='notify-send --urgency=low -i "$([[ $? = 0 ]] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 	# Laziness, puuure laziness.  :)
     alias a=alias
@@ -462,7 +492,7 @@ ${Cyan}\!${Color_Off}\
     # 1.2.3.4/24 :
     #        00000001 00000010 00000011 00000100 
     #        11111111 11111111 11111111 00000000 
-    bincidr () {
+    function bincidr () {
         perl -e '
             use strict;
             use warnings;
@@ -492,23 +522,23 @@ ${Cyan}\!${Color_Off}\
     ###
     # Functional equivalents to old tcsh aliases and miscellaneous
     # other functions.
-    lme  () { ls -ls $* | grep $USER; }
-    lstf () { ls -l  $* | grep "^-";  }
-    lstd () { ls -l  $* | grep "^d";  }
-    lstl () { ls -l  $* | grep "^l";  }
+    function lme  () { ls -ls $* | grep $USER; }
+    function lstf () { ls -l  $* | grep "^-";  }
+    function lstd () { ls -l  $* | grep "^d";  }
+    function lstl () { ls -l  $* | grep "^l";  }
 
     # On some hosts, sometimes, connections to technobrat
     # will hang.  This is just a simple wrapper to let
     # me kill them with a bit less typing.
-    killtb () { 
+    function killtb () { 
         tbproc=`ps auxww | grep "[s]sh.*[t]b"`
-        if [ "x$tbproc" != "x" ]
+        if [[ -n $tbproc ]]
         then
             tbpid=`echo $tbproc | awk '{print $2}'`
             /bin/echo "Found $tbpid (from - $tbproc)"
             /bin/echo -n "Kill? y/[n] "
             read yeanay
-            if [ "${yeanay:-N}" == "Y" ] || [ "${yeanay:-N}" == "y" ]
+            if [[ ${yeanay:-N} =~ ^y(es)?$ ]]
             then
                 /bin/kill $tbpid
             else
@@ -521,13 +551,13 @@ ${Cyan}\!${Color_Off}\
 
     ###
     # Found a set of diff args that I like  :)
-    mydiff() {
+    function mydiff () {
         cols=`stty size | awk '{print $2}'`
         diff --side-by-side --left-column --width=$cols --ignore-all-space $1 $2
     }
 
     # t2d -> time2date
-    t2d() {
+    function t2d () {
         perl -e 'use POSIX qw{ :time_h };
                  my $epoch = shift;
                  $epoch =~ s/^0//;
@@ -535,7 +565,7 @@ ${Cyan}\!${Color_Off}\
     }
 
     # d2t -> date2time
-    d2t() {
+    function d2t () {
         perl -e 'use POSIX qw{ :time_h };
                  my $yyyymmdd = shift;
                  ($y,$m,$d) = ($yyyymmdd =~ /(\d{4})(\d{2})(\d{2})/);
@@ -545,9 +575,9 @@ ${Cyan}\!${Color_Off}\
     }
 
     # New perl script, with the basics in place.
-    newperl () {
+    function newperl () {
         WRITE="no"
-        if [ -f "$1" ]
+        if [[ -f "$1" ]]
         then
             echo -n "$1 exists.  Overwrite? [y/N] "
             read WRITE
@@ -555,7 +585,7 @@ ${Cyan}\!${Color_Off}\
         else
             WRITE="yes"
         fi
-        if [ "x$WRITE" != "xyes" ] && [ "x$WRITE" != "xy" ] 
+        if [[ ! ( $WRITE =~ ^y(es)?$ ) ]] 
         then
             echo "Not writing $1"
         else
@@ -573,15 +603,15 @@ ${Cyan}\!${Color_Off}\
     }
 
     # Likewise, for a new package.
-    newpm () {
+    function newpm () {
         WRITE="no"
         NEWFILE=${1:-NO_FILENAME_GIVEN}
         PM_PATTERN='[^.]\.pm$'
-        if ! [[ $NEWFILE =~ $PM_PATTERN ]]
+        if [[ ! ( $NEWFILE =~ $PM_PATTERN ) ]]
         then
             echo "Bad filename (must end in '.pm'): $NEWFILE"
         else
-            if [ -f $NEWFILE ]
+            if [[ -f $NEWFILE ]]
             then
                 echo -n "$NEWFILE exists.  Overwrite? [y/N] "
                 read WRITE
@@ -589,7 +619,7 @@ ${Cyan}\!${Color_Off}\
             else
                 WRITE="yes"
             fi
-            if [ "x$WRITE" != "xyes" ] && [ "x$WRITE" != "xy" ] 
+            if [[ ! ( $WRITE =~ ^y(es)?$ ) ]]
             then
                 echo "Not writing $NEWFILE"
             else
@@ -609,8 +639,8 @@ ${Cyan}\!${Color_Off}\
 
     ###
     # In case 'perldoc -l <module>' doesn't work.
-    pmwhich() {
-        if [ "x$1" != "x" ]
+    function pmwhich () {
+        if [[ -n $1 ]]
         then
             perl -e \
                'foreach my $module (@ARGV) {
@@ -637,8 +667,8 @@ ${Cyan}\!${Color_Off}\
     ###
     # Given an errno.h error number (via syslog or some such)
     # print the associated error message.
-    errno() {
-        if [ "x$1" != "x" ]
+    function errno () {
+        if [[ -n $1 ]]
         then
             perl -e \
                     'use English;
@@ -657,8 +687,8 @@ ${Cyan}\!${Color_Off}\
 
     ###
     # What are the atime, mtime, and ctime for a file or files?
-    ftimes () {
-        if [ "x$*" != "x" ]
+    function ftimes () {
+        if [[ -n $* ]]
         then
             for file in $*
             do
@@ -674,7 +704,58 @@ ${Cyan}\!${Color_Off}\
             echo "Please specify a file or files to examine."
         fi
     }
-    
+
+    ###
+    # Make sure the basic directory structure is in place.
+    function bootstrapSourceDirs () {
+        local status
+        if [[ -d ${HOME}/${MYDIR[$ENV]} ]]
+        then
+            cd ${HOME}/${MYDIR[$ENV]}
+            if [[ $? -eq 0 ]]
+            then
+                for dir in ${MYDIR[*]}
+                do
+                    if [[ ! -d $dir ]]
+                    then
+                        mkdir $dir
+                        if [[ $? -eq 1 ]]; then status=1; fi
+                    fi
+                done
+                if [[ ! -d .ssh ]]
+                then
+                    mkdir .ssh
+                else
+                    sshDirExists=$(exit 0)
+                fi
+                if [[ $? -eq 0 ]]
+                then
+                    if [[ -f ${HOME}/.ssh/config ]]
+                    then
+                        ln -s ${HOME}/.ssh/config .ssh/config 2> /dev/null
+                    fi
+                    if [[ -f ${HOME}/.ssh/authorized_keys ]]
+                    then
+                        ln -s ${HOME}/.ssh/authorized_keys .ssh/authorized_keys 2> /dev/null
+                    fi
+                else
+                    status=1
+                fi
+            else
+                status=1
+            fi
+            cd - &> /dev/null
+        else
+            status=1
+        fi
+        if [[ ${status:-0} -eq 1 ]]
+        then 
+            status=$(exit 1)
+        else
+            status=$(exit 0)
+        fi
+    }
+
 	###
     # syncenv() syncs my "dot files" and other assorted shell creature comforts
     # to a specified host.  
@@ -685,17 +766,35 @@ ${Cyan}\!${Color_Off}\
     # Removing the following files, for now...
     #                             $ENV{"HOME"} . "/.gdbinit",
     #                             $ENV{"HOME"} . "/bin/vmssh",
-	syncenv () {
-        cd
-        tar cf myenv.tar .bashrc .bash_colors .bash_profile .vimrc .vim .ssh/authorized_keys .ssh/config
+	function syncenv () {
+        if [[ -z $1 ]]
+        then
+            echo "Usage: syncenv [local] [list of hosts]"
+        else
+            bootstrapSourceDirs
+            if [[ $? -eq 1 ]]
+            then
+                echo "FATAL: Unable to validate/create basic directory structure."
+                echo "FATAL: No sync performed."
+            else
+                cd ${MYDIR[$ENV]}
 
-        HOST_LIST=($*)
-        for HOST in ${HOST_LIST[*]}
-        do
-            echo "$HOST : "
-            cat myenv.tar | ssh $HOST 'tar xvf -'
-        done
+                local TargetPath
+                for TargetHost in $*
+                do
+                    if [[ $TargetHost = "local" ]]
+                    then
+                        TargetPath="${HOME}/"
+                    else
+                        TargetPath="${TargetHost}:\"~/\""
+                    fi
 
+                    echo "$TargetHost : "
+                    echo rsync -Laz --include-from=include.these --exclude-from=exclude.these ./ $TargetPath
+                done
+                cd - &> /dev/null
+            fi
+        fi
 	}
 
     ###
@@ -713,10 +812,10 @@ ${Cyan}\!${Color_Off}\
 		alias	seti="screen -dr seti"
 		alias	smutt="screen -S mutt mutt"
 
-		if [ -s $HOME/randsig.pid ] # { RANDSIGPID_COND
+		if [[ -s $HOME/randsig.pid ]] # { RANDSIGPID_COND
 		then
 			echo Not starting randsig : Already running.
-        elif [ -x "$HOME/bin/randsig" ] # } Else - RANDSIGPID_COND {
+        elif [[ -x "$HOME/bin/randsig" ]] # } Else - RANDSIGPID_COND {
         then
 		    echo -n "Starting randsig... "
     		/bin/rm -f $HOME/randsig.pid &> /dev/null
