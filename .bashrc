@@ -11,11 +11,35 @@ then
 	. /etc/bash.bashrc
 fi
 
+# Grab any local settings
+if [[ -f ${HOME}/.bash_local ]]
+then
+    . ${HOME}/.bash_local
+fi
+
+# Tools for syncing and maintaining the local environment
+if [[ -f ${HOME}/.bash_env_mgmt ]]
+then
+    . ${HOME}/.bash_env_mgmt
+else
+    ###
+    # Standard directories I always use; just in case the file
+    # above goes missing.
+    export MYDIR=("bin" "devel" "env" "personal" "tmp" "workstuff")
+    BIN=0
+    DEVEL=1
+    ENV=2
+    PERSONAL=3
+    TMP=4
+    WORK=5
+fi
+
 umask 022
 
 ##
-# Where is "home"?  This is 
-HOME_HOST="jonesville"
+# This should be set in .bash_local; setting a default
+# so I have a value to use in comparisons.
+HOME_HOST=${HOME_HOST:-NOT_HERE}
 
 ##
 # One-stop shop for info about the host I'm on.  An array consisting of:
@@ -60,17 +84,6 @@ fi
 ###
 # Once you travel down this $PATH, forever will it dominate your destiny
 export PATH=/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/X11R6/bin:~/bin:~
-
-###
-# Standard directories I always use
-export MYDIR=("bin" "devel" "env" "personal" "tmp" "workstuff")
-BIN=0
-DEVEL=1
-ENV=2
-PERSONAL=3
-TMP=4
-WORK=5
-
 
 ###
 # Only need the rest of this if I'm working interactively ($PS1 is set)
@@ -163,7 +176,7 @@ then
     fi
 
     # make less more friendly for non-text input files, see lesspipe(1)
-    if [ -x /usr/bin/lesspipe ]
+    if [[ -x /usr/bin/lesspipe ]]
     then
         eval "$(SHELL=/bin/sh lesspipe)"
     fi
@@ -171,7 +184,7 @@ then
     # Enable programmable completion features (no need to enable this
     # here if it's already enabled in /etc/bash.bashrc and /etc/profile
     # sources /etc/bash.bashrc).
-    if [ -f /etc/bash_completion ] && ! shopt -oq posix
+    if [[ -f /etc/bash_completion && !(shopt -oq posix) ]]
     then
         . /etc/bash_completion
     fi
@@ -230,7 +243,7 @@ then
     # it.  :)
     #
     # set variable identifying the chroot you work in (used in the prompt below)
-    ##if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]
+    ##if [[ -z "$debian_chroot" && -r /etc/debian_chroot ]]
     ##then
     ##    debian_chroot=$(cat /etc/debian_chroot)
     ##fi
@@ -256,11 +269,6 @@ then
     then
         . $HOME/.bash_colors
     else
-        # This color scheme is largely designed to go well on a terminal with
-        # a black (or all-but-black) background and yellow-ish foreground (text).
-        # The best one I've found so far is something closely akin to the color
-        # used for unique items in Diablo II: RGB:#D49E43 / HSV:37,175,212
-        # 
         # If there's no .bash_colors, just define the ones I need in the prompt
         # I'm setting $Esc to <ctrl>-v<esc> because I've run into environments
         # where '\e' and '\033' haven't worked, and I haven't been motivated
@@ -388,35 +396,42 @@ then
 
     ###
     # 
+    # This color scheme is largely designed to go well on a terminal with a
+    # black (or all-but-black) background and yellow-ish foreground (text).
+    # The best one I've found so far is something closely akin to the color
+    # used for unique items in Diablo II: RGB:#D49E43 / HSV:37,175,212
+    # 
     # Minimally, my prompt will look like this, in color:
     # 
     # host.im.on - /my/current/working/direcotory <"not a repo" icon> : 1234
     # Yes, My Liege? $
     # 
-    # However, potentially, the prompt could end up looking like all of
-    # this (also colorized, of course):
+    # However, potentially, the prompt could end up looking like all of this
+    # (also colorized, of course):
     #
     # #screensession:0# host.im.on[VM] - /my/current/working/directory (git branch)<status icon(s)> : 1234
     # Yes, My Liege? $ 
     #
-    # The screen session name is only filled in when I can tell I'm inside a screen/tmux
-    # session, and I can tell what the name is.
+    # The screen session name is only filled in when I can tell I'm inside a
+    # screen/tmux session, and I can tell what the name is.
     #
-    # The [VM] tag is only applied when I can determine that I'm in a virtual machine.
+    # The [VM] tag is only applied when I can determine that I'm in a virtual
+    # machine.
     #
-    # '1234' will be the current history number (useful for repeating commands, etc).
+    # '1234' will be the current history number (useful for repeating commands,
+    # etc).
     #
-    # Wrapping all of this in a function so I can use PROMPT_COMMAND (see bash(1)).  That
-    # means the git status will be refreshed as I go.
+    # Wrapping all of this in a function so I can use PROMPT_COMMAND (see
+    # bash(1)).  That means the git status will be refreshed as I go.
     # 
-    function currentprompt () {
+    function currentPrompt () {
         PS1="${IGreen}${ScreenName:+"#${ScreenName}# "}${BWhite}${THIS_HOST[$SHORTNAME]}${Color_Off}\
 ${IS_VM:+${BRed}[VM]${Color_Off}} - \
 ${Purple}\w${Color_Off}$(gitStatusTag) : \
 ${Cyan}\!${Color_Off}\
 \nYes, My Liege? \$ "
 }
-    PROMPT_COMMAND=currentprompt
+    PROMPT_COMMAND=currentPrompt
 
     ###
     #
@@ -471,51 +486,78 @@ ${Cyan}\!${Color_Off}\
     alias psme="ps auxww | egrep \"^(USER|${USER})\" | sort"
     # Safety first
     alias rm="rm -i"
-    alias sp=". $HOME/.bashrc"
-    alias vp="vi $HOME/.bashrc"
+    alias sp=". ${MYDIR[$ENV]}/.bashrc"
+    alias vp="vi ${MYDIR[$ENV]}/.bashrc"
 
     ###
     # IP transforms
     #
     # integer to ip: 16909060 -> 1.2.3.4
     alias i2ip="perl -MSocket -e 'print +inet_ntoa(pack(q{N}, shift)), qq{\n}'"
+    #
     # ip to integer:  1.2.3.4 -> 16909060
     alias ip2i="perl -MSocket -e 'print +unpack(q{N}, inet_aton(shift)), qq{\n}'"
-    # ip to hex:      1.2.3.4 -> 01020304
-    alias ip2h="perl -MSocket -e 'print +sprintf(q{%0.8x}, unpack(q{N}, inet_aton(shift))), qq{\n}'"
+    #
     # hex to ip:     01020304 -> 1.2.3.4
     alias h2ip="perl -MSocket -e 'print +inet_ntoa(pack(q{N}, hex(shift))), qq{\n}'"
+    #
+    # ip to hex:      1.2.3.4 -> 01020304
+    alias ip2h="perl -MSocket -e 'print +sprintf(q{%0.8x}, unpack(q{N}, inet_aton(shift))), qq{\n}'"
 
-    # Shows an IP and mask in binary.
+    # Shows an IP and mask in dotted-quad and binary.
     # Example:
     # $ bincidr 1.2.3.4/24
-    # 1.2.3.4/24 :
-    #        00000001 00000010 00000011 00000100 
-    #        11111111 11111111 11111111 00000000 
+    # 1.2.3.4/24
+    # ==========
+    #   Dotted Quad:
+    #               1.       2.       3.       4
+    #      &      255.     255.     255.       0
+    #      =        1.       2.       3.       0
+    #   Binary:
+    #        00000001 00000010 00000011 00000100
+    #      & 11111111 11111111 11111111 00000000 
+    #      = 00000001 00000010 00000011 00000000
     function bincidr () {
         perl -e '
             use strict;
             use warnings;
-            my $network = shift;
-            die "Invalid network: $network (must be in a.b.c.d/m form)\n" unless ($network =~ m|/|);
+            use Socket;
+            my $cidr = shift;
+            my ($net, $mask);
+            my $validBlock = undef;
+            if ($cidr && $cidr =~ m|/|) {
+                ($net, $mask) = (split /\//, $cidr);
+                if ($net =~ /\A(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\Z/) {
+                    if (($1<=255) && ($2<=255) && ($3<=255) && ($4<=255)) {
+                        if ($mask !~ /\D/) {
+                            if ($mask <= 32) {
+                                $validBlock = 1;
+                            }
+                        }
+                    }
+                }
+            }
+            die "Invalid cidr block: "
+                . ($cidr ? $cidr : "NOT SPECIFIED")
+                . " (must be in a.b.c.d/m form)\n"
+                unless $validBlock;
 
-            my ($net, $mask) = (split /\//, $network);
+            my $net_n   = inet_aton($net);
+            my $mask_n  = pack "B32", ("1" x $mask . "0" x (32 - $mask));
+            my $final_n = $net_n & $mask_n;
 
-            print "$network :\n\t";
-            foreach my $octet ( split /\./, $net ) {
-                print +unpack("B*", pack("C", $octet)), " ";
-            }
-            print "\n\t";
-            print "11111111 " x int($mask / 8);
-            if ($mask % 8) {
-                print "1"         x         ($mask % 8);
-                print "0"         x (8 -    ($mask % 8)) . " ";
-                print "00000000 " x (3 - int($mask / 8));
-            }
-            else {
-                print "00000000 " x (4 - int($mask / 8));
-            }
-            print "\n";
+            sub spaceQuad { my $a = shift; return join(".", map {sprintf "%8d", $_} split(/\./, $a)) }
+            print "$cidr :\n", "=" x length($cidr), "\n";
+            print "    Dotted Quad:\n";
+            print " " x 8,            spaceQuad($net), "\n";
+            print " " x 6, "\&", " ", spaceQuad(inet_ntoa($mask_n)), "\n";
+            print " " x 6,  "=", " ", spaceQuad(inet_ntoa($final_n)), "\n";
+            
+            sub spaceBin { my $n = shift; return join(" ", unpack("(B8)*", $n)) }
+            print "    Binary:\n";
+            print " " x 8,            spaceBin($net_n), "\n";
+            print " " x 6, "\&", " ", spaceBin($mask_n), "\n";
+            print " " x 6,  "=", " ", spaceBin($final_n), "\n";
         ' $1
     }
 
@@ -572,6 +614,13 @@ ${Cyan}\!${Color_Off}\
                  @lt = localtime(time);
                  @lt[0..5] = (0,0,0,$d,$m-1,$y-1900);
                  print +strftime("%s",@lt), "\n"' $1
+    }
+
+    # For some reason, I can't seem to get modelines to work
+    # all the time on some bash files.  This makes sure I get
+    # the right syntax highlighting.
+    function vish () {
+        vi -c "set filetype=sh" $*
     }
 
     # New perl script, with the basics in place.
@@ -704,98 +753,6 @@ ${Cyan}\!${Color_Off}\
             echo "Please specify a file or files to examine."
         fi
     }
-
-    ###
-    # Make sure the basic directory structure is in place.
-    function bootstrapSourceDirs () {
-        local status
-        if [[ -d ${HOME}/${MYDIR[$ENV]} ]]
-        then
-            cd ${HOME}/${MYDIR[$ENV]}
-            if [[ $? -eq 0 ]]
-            then
-                for dir in ${MYDIR[*]}
-                do
-                    if [[ ! -d $dir ]]
-                    then
-                        mkdir $dir
-                        if [[ $? -eq 1 ]]; then status=1; fi
-                    fi
-                done
-                if [[ ! -d .ssh ]]
-                then
-                    mkdir .ssh
-                else
-                    sshDirExists=$(exit 0)
-                fi
-                if [[ $? -eq 0 ]]
-                then
-                    if [[ -f ${HOME}/.ssh/config ]]
-                    then
-                        ln -s ${HOME}/.ssh/config .ssh/config 2> /dev/null
-                    fi
-                    if [[ -f ${HOME}/.ssh/authorized_keys ]]
-                    then
-                        ln -s ${HOME}/.ssh/authorized_keys .ssh/authorized_keys 2> /dev/null
-                    fi
-                else
-                    status=1
-                fi
-            else
-                status=1
-            fi
-            cd - &> /dev/null
-        else
-            status=1
-        fi
-        if [[ ${status:-0} -eq 1 ]]
-        then 
-            status=$(exit 1)
-        else
-            status=$(exit 0)
-        fi
-    }
-
-	###
-    # syncenv() syncs my "dot files" and other assorted shell creature comforts
-    # to a specified host.  
-	#
-	# Note that some of the hosts may require a proxy to reach.  That should
-	# be taken care of in ~/.ssh/config
-    # 
-    # Removing the following files, for now...
-    #                             $ENV{"HOME"} . "/.gdbinit",
-    #                             $ENV{"HOME"} . "/bin/vmssh",
-	function syncenv () {
-        if [[ -z $1 ]]
-        then
-            echo "Usage: syncenv [local] [list of hosts]"
-        else
-            bootstrapSourceDirs
-            if [[ $? -eq 1 ]]
-            then
-                echo "FATAL: Unable to validate/create basic directory structure."
-                echo "FATAL: No sync performed."
-            else
-                cd ${MYDIR[$ENV]}
-
-                local TargetPath
-                for TargetHost in $*
-                do
-                    if [[ $TargetHost = "local" ]]
-                    then
-                        TargetPath="${HOME}/"
-                    else
-                        TargetPath="${TargetHost}:\"~/\""
-                    fi
-
-                    echo "$TargetHost : "
-                    echo rsync -Laz --include-from=include.these --exclude-from=exclude.these ./ $TargetPath
-                done
-                cd - &> /dev/null
-            fi
-        fi
-	}
 
     ###
     #

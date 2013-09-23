@@ -1,3 +1,15 @@
+Version 1.1.0
+* brian, 2013/09/22
+*	* Split $MYDIRS, syncenv(), bootstrapStandardDirs() into
+*	  a separate file.
+*	* Added myBasename() and resource()
+*	* Cleaned up another couple of conditionals.
+*	* Fixed up bincidr()
+*	* Camel-cased currentPrompt()
+*	* Changed vp() and sp() to point at env/.bashrc in prep
+*	  for the new workflow I have in mind
+*	* Added vish()
+
 Version 1.0.0
 * brian, 2013/09/15
 *	* First versioned release.

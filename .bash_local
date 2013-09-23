@@ -1,0 +1,6 @@
+# $HOME_HOST is used to indicate the desktop, laptop, or other physical
+# host where I actually login and from which I log in to other hosts in
+# a network.  Kind of the "master" host, in other words.  Also, the only
+# place I might need mail, browser, or X-windows settings, for example.
+# No default.
+#HOME_HOST=

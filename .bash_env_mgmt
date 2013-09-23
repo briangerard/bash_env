@@ -1,0 +1,167 @@
+# .bashrc extension
+
+###
+# This and other external scripts may be loaded multiple
+# times, and each may load any of the others depending on
+# the value(s) they may need.  This construct is to dodge
+# potential recursive inclusions.  The resource() function
+# allows me to reload when I explicitly request it without
+# having to unset the variable.
+#
+# Think of it like the old C...
+# #ifndef __THIS_LIBRARY_LOADED__
+# #define __THIS_LIBRARY_LOADED__
+# (...header here...)
+# #endif
+# ...trick, but for the shell.  :)
+#
+if [[    ${loaded_bash_env_mgmt:-NOT_LOADED}  != "LOADED" \
+      || ${reload_bash_env_mgmt:-DO_NOT_LOAD}  = "RELOAD" ]]
+then
+    loaded_bash_env_mgmt="LOADED"
+    reload_bash_env_mgmt="DO_NOT_LOAD"
+
+    ###
+    # Standard directories I always use
+    export MYDIR=("bin" "devel" "env" "personal" "tmp" "workstuff")
+    BIN=0
+    DEVEL=1
+    ENV=2
+    PERSONAL=3
+    TMP=4
+    WORK=5
+
+    ###
+    # basename(1) should be everywhere, but I've run into
+    # environments where surprising things are absent.
+    function myBasename () {
+        bn=""
+        if [[ -n $1 ]]
+        then
+            foundBasename=$(which basename)
+            if [[ -n $foundBasename && -x $foundBasename ]]
+            then
+                bn=$($foundBasename $1)
+            else
+                bn=$(echo $1 | sed -e 's/.*\/\([^\/][^\/]*)$/\1/')
+            fi
+        fi
+        echo $bn
+    }
+
+    ###
+    # As mentioned above, 
+    function resource () {
+        if [[ -n $1 ]]
+        then
+            FileToLoad=$1
+            if [[ -f $FileToLoad ]]
+            then
+                ReloadVarName=$(myBasename $FileToLoad)
+                ReloadVarName=$(echo $ReloadVarName | sed -e 's/^\.*/reload_/')
+                eval ${ReloadVarName}=RELOAD
+                . $FileToLoad
+            else
+                echo "No such file: $FileToLoad"
+            fi
+        else
+            echo "Usage: resource <filename>"
+        fi
+    }
+
+    ###
+    # Make sure the basic directory structure is in place.
+    function bootstrapStandardDirs () {
+        local status
+        if [[ -d ${HOME}/${MYDIR[$ENV]} ]]
+        then
+            cd ${HOME}/${MYDIR[$ENV]}
+            if [[ $? -eq 0 ]]
+            then
+                for dir in ${MYDIR[*]}
+                do
+                    if [[ ! -d $dir ]]
+                    then
+                        mkdir $dir
+                        if [[ $? -eq 1 ]]; then status=1; fi
+                    fi
+                done
+                if [[ ! -d .ssh ]]
+                then
+                    mkdir .ssh
+                else
+                    local sshDirExists
+                    sshDirExists=$(exit 0)
+                fi
+                if [[ $? -eq 0 ]]
+                then
+                    if [[ -f ${HOME}/.ssh/config ]]
+                    then
+                        ln -s ${HOME}/.ssh/config .ssh/config 2> /dev/null
+                    fi
+                    if [[ -f ${HOME}/.ssh/authorized_keys ]]
+                    then
+                        ln -s ${HOME}/.ssh/authorized_keys .ssh/authorized_keys 2> /dev/null
+                    fi
+                else
+                    status=1
+                fi
+            else
+                status=1
+            fi
+            cd - &> /dev/null
+        else
+            status=1
+        fi
+        # The real point of this is that it sets $?
+        # - $status is really just a dummy variable
+        if [[ ${status:-0} -eq 1 ]]
+        then 
+            status=$(exit 1)
+        else
+            status=$(exit 0)
+        fi
+    }
+
+	###
+    # syncenv() syncs my "dot files" and other assorted shell creature comforts
+    # to a specified host.  
+	#
+	# Note that some of the hosts may require a proxy to reach.  That should
+	# be taken care of in ~/.ssh/config
+    # 
+    # Removing the following files, for now...
+    #                             $ENV{"HOME"} . "/.gdbinit",
+    #                             $ENV{"HOME"} . "/bin/vmssh",
+	function syncenv () {
+        if [[ -z $1 ]]
+        then
+            echo "Usage: syncenv [local] [list of hosts]"
+        else
+            bootstrapStandardDirs
+            if [[ $? -eq 1 ]]
+            then
+                echo "FATAL: Unable to validate/create basic directory structure."
+                echo "FATAL: No sync performed."
+            else
+                cd ${MYDIR[$ENV]}
+
+                local TargetPath
+                for TargetHost in $*
+                do
+                    if [[ $TargetHost = "local" ]]
+                    then
+                        TargetPath="${HOME}/"
+                    else
+                        TargetPath="${TargetHost}:\"~/\""
+                    fi
+
+                    echo "$TargetHost : "
+                    echo rsync -Laz --include-from=include.these --exclude-from=exclude.these ./ $TargetPath
+                done
+                cd - &> /dev/null
+            fi
+        fi
+	}
+
+fi
