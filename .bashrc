@@ -343,9 +343,9 @@ then
         RepoChanged="${BIRed} \xe2\x9c\x98"
 
         # UTF-8 North East Black Arrow, in bold intense yellow
-        LocalAhead="${BIYellow} \xe2\xac\x8b"
+        LocalAhead="${BIYellow} \xe2\xac\x88 "
         # UTF-8 South West Black Arrow, in bold intense yellow
-        LocalBehind="${BIYellow} \xe2\xac\x8b"
+        LocalBehind="${BIYellow} \xe2\xac\x8b "
         # UTF-8 Radioactive sign, in bold intense yellow
         Divergent="${BIYellow} \xe2\x98\xa2 "
 
