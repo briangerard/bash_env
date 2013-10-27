@@ -518,8 +518,8 @@ ${Cyan}\!${Color_Off}\
     alias psme="ps auxww | egrep \"^(USER|${USER})\" | sort"
     # Safety first
     alias rm="rm -i"
-    alias sp=". ${MYDIR[$ENV]}/.bashrc"
-    alias vp="vi ${MYDIR[$ENV]}/.bashrc"
+    alias sp=". ${HOME}/${MYDIR[$ENV]}/.bashrc"
+    alias vp="vi ${HOME}/${MYDIR[$ENV]}/.bashrc"
 
     ###
     # IP transforms
