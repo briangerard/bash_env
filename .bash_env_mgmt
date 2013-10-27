@@ -156,7 +156,7 @@ then
                 echo "FATAL: Unable to validate/create basic directory structure."
                 echo "FATAL: No sync performed."
             else
-                cd ${MYDIR[$ENV]}
+                cd ${HOME}/${MYDIR[$ENV]}
 
                 local TargetPath
                 for TargetHost in $*
@@ -169,7 +169,7 @@ then
                     fi
 
                     echo "$TargetHost : "
-                    echo rsync -Laz --include-from=include.these --exclude-from=exclude.these ./ $TargetPath
+                    rsync -Lazvv --include-from=./include.these --exclude-from=./exclude.these ./ $TargetPath
                 done
                 cd - &> /dev/null
             fi

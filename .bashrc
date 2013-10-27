@@ -184,7 +184,8 @@ then
     # Enable programmable completion features (no need to enable this
     # here if it's already enabled in /etc/bash.bashrc and /etc/profile
     # sources /etc/bash.bashrc).
-    if [[ -f /etc/bash_completion && !(shopt -oq posix) ]]
+    shopt -oq posix
+    if [[ -f /etc/bash_completion && $? -ne 0 ]]
     then
         . /etc/bash_completion
     fi
