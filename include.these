@@ -1,0 +1,15 @@
+.bash_colors
+.bash_env_mgmt
+.bash_local
+.bashrc
+.ssh/
+.vim/
+.vimrc
+ChangeLog
+README.md
+bin/
+devel/
+env/
+personal/
+tmp/
+workstuff/

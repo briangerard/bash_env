@@ -2,8 +2,8 @@
 # Downloaded from: https://gist.github.com/scottweaver/3278629
 # See also: console_codes(4)
 #
-# Meh.  This should *REALLY* not be necessary, but '\e' and the
-# like don't seem to work.
+# Meh.  This should *REALLY* not be necessary, but I've been on 
+# systems where '\e' and the like don't seem to work.
 #
 # This is '<ctrl>-v<esc>'.
 Esc=''

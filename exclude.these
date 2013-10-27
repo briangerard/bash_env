@@ -1,0 +1,4 @@
+.git/
+.gitignore
+exclude.these
+include.these

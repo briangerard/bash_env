@@ -299,30 +299,61 @@ then
     # A good list of UTF-8 characters I found is at
     # http://www.fileformat.info/info/charset/UTF-8/list.htm
     #
+    # First, the fancy characters.  I have not yet found a Linux font
+    # that includes all of these characters.  They work on Mac Terminals,
+    # but not on Linux.  The search continues.
+    #
     # The following characters can be found on
     # http://www.fileformat.info/info/charset/UTF-8/list.htm?start=50176
     # 
     # ...except for the 'lightning bolt', which can be seen on
     # http://www.fileformat.info/info/charset/UTF-8/list.htm?start=8192
     #
-    # NOTE: I have not yet found a Linux font that includes all of these
-    # characters.  They work on Mac Terminals, but not on Linux.  The
-    # search continues.
-    
-    # UTF-8 glowing star
-    RepoClean='\xf0\x9f\x8c\x9f '
-    # UTF-8 lightning bolt
-    RepoChanged='\xe2\x9a\xa1 '
+    if [[ ${GitStatusFont:-NOT_SET} =~ "fancy" ]]
+    then
+        # UTF-8 glowing star
+        RepoClean='\xf0\x9f\x8c\x9f '
+        # UTF-8 lightning bolt
+        RepoChanged='\xe2\x9a\xa1 '
 
-    # UTF-8 small up arrow
-    LocalAhead='\xf0\x9f\x94\xbc '
-    # UTF-8 small down arrow
-    LocalBehind='\xf0\x9f\x94\xbd '
-    # UTF-8 wrench
-    Divergent='\xf0\x9f\x94\xa7 '
+        # UTF-8 small up arrow
+        LocalAhead='\xf0\x9f\x94\xbc '
+        # UTF-8 small down arrow
+        LocalBehind='\xf0\x9f\x94\xbd '
+        # UTF-8 wrench
+        Divergent='\xf0\x9f\x94\xa7 '
 
-    # UTF-8 no entry sign
-    NotARepo='\xf0\x9f\x9a\xab '
+        # UTF-8 no entry sign
+        NotARepo='\xf0\x9f\x9a\xab '
+        # UTF-8 no entry sign
+        GitNotInstalled='\xf0\x9f\x9a\xab '
+
+    # The rest of these seem to be more universally available; if
+    # I don't get my fancy eye candy, I'll at least have something.  :)
+    #
+    # These can be found on the 'lightning bolt' page listed above,
+    # as well as on
+    # http://www.fileformat.info/info/charset/UTF-8/list.htm?start=9216
+    # 
+    else
+        # UTF-8 heavy checkmark, in bold intense green
+        RepoClean="${BIGreen} \xe2\x9c\x94"
+        # UTF-8 heavy ballot x, in bold intense red
+        RepoChanged="${BIRed} \xe2\x9c\x98"
+
+        # UTF-8 North East Black Arrow, in bold intense yellow
+        LocalAhead="${BIYellow} \xe2\xac\x8b"
+        # UTF-8 South West Black Arrow, in bold intense yellow
+        LocalBehind="${BIYellow} \xe2\xac\x8b"
+        # UTF-8 Radioactive sign, in bold intense yellow
+        Divergent="${BIYellow} \xe2\x98\xa2 "
+
+        # UTF-8 N-Ary circled times operator, in bold intense red
+        NotARepo="${BIRed} \xe2\xa8\x82"
+        # UTF-8 N-Ary circled times operator, in bold intense blue
+        GitNotInstalled="${BIBlue} \xe2\xa8\x82"
+
+    fi
 
     GIT=$(which git 2> /dev/null)
     GIT=${GIT:-NO_GIT}
@@ -346,7 +377,7 @@ then
     function gitStatusTag () {
         if [[ $GIT = "NO_GIT" ]]
         then
-            echo -e $NotARepo
+            echo -e $GitNotInstalled
         else
             # Are we even in a git repo?
             $GIT rev-parse --is-inside-git-repository &> /dev/null

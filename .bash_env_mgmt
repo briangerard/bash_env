@@ -1,10 +1,11 @@
 # .bashrc extension
+# vim: set filetype=sh:
 
 ###
 # This and other external scripts may be loaded multiple
 # times, and each may load any of the others depending on
 # the value(s) they may need.  This construct is to dodge
-# potential recursive inclusions.  The resource() function
+# potential recursive inclusions.  The reSource() function
 # allows me to reload when I explicitly request it without
 # having to unset the variable.
 #
@@ -18,8 +19,8 @@
 if [[    ${loaded_bash_env_mgmt:-NOT_LOADED}  != "LOADED" \
       || ${reload_bash_env_mgmt:-DO_NOT_LOAD}  = "RELOAD" ]]
 then
-    loaded_bash_env_mgmt="LOADED"
-    reload_bash_env_mgmt="DO_NOT_LOAD"
+    export loaded_bash_env_mgmt="LOADED"
+    export reload_bash_env_mgmt="DO_NOT_LOAD"
 
     ###
     # Standard directories I always use
@@ -51,7 +52,7 @@ then
 
     ###
     # As mentioned above, 
-    function resource () {
+    function reSource () {
         if [[ -n $1 ]]
         then
             FileToLoad=$1
@@ -65,7 +66,7 @@ then
                 echo "No such file: $FileToLoad"
             fi
         else
-            echo "Usage: resource <filename>"
+            echo "Usage: reSource <filename>"
         fi
     }
 
@@ -73,19 +74,26 @@ then
     # Make sure the basic directory structure is in place.
     function bootstrapStandardDirs () {
         local status
+        # Begin with ~/env - the source of all truth
         if [[ -d ${HOME}/${MYDIR[$ENV]} ]]
         then
             cd ${HOME}/${MYDIR[$ENV]}
             if [[ $? -eq 0 ]]
             then
+                # ...now create dummy versions of all the
+                # other standard dirs under it.
                 for dir in ${MYDIR[*]}
                 do
                     if [[ ! -d $dir ]]
                     then
                         mkdir $dir
-                        if [[ $? -eq 1 ]]; then status=1; fi
+                        if [[ $? -eq 1 ]]
+                        then
+                            status=1
+                        fi
                     fi
                 done
+                # Also .ssh
                 if [[ ! -d .ssh ]]
                 then
                     mkdir .ssh
@@ -93,6 +101,8 @@ then
                     local sshDirExists
                     sshDirExists=$(exit 0)
                 fi
+                # Make symlinks to the config and authorized keys
+                # so they'll come along for the ride when syncing.
                 if [[ $? -eq 0 ]]
                 then
                     if [[ -f ${HOME}/.ssh/config ]]
@@ -115,6 +125,8 @@ then
         fi
         # The real point of this is that it sets $?
         # - $status is really just a dummy variable
+        # This allows me to test $? after calling
+        # this function and get a meaningful value.
         if [[ ${status:-0} -eq 1 ]]
         then 
             status=$(exit 1)
