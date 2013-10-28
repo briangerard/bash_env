@@ -386,7 +386,7 @@ then
             then
                 GitStatus="$($GIT status 2> /dev/null)"
                 BranchPattern="^# On branch ([^${IFS}]*)"
-                RemotePattern="# Your branch is (.*) "
+                RemotePattern="# Your branch is ([^ ]+) "
                 DivergePattern="# Your branch and (.*) have diverged"
 
                 if [[ ! ( ${GitStatus} =~ "working directory clean" ) ]]
