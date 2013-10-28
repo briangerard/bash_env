@@ -24,13 +24,13 @@ then
 
     ###
     # Standard directories I always use
-    export MYDIR=("bin" "devel" "env" "personal" "tmp" "workstuff")
-    BIN=0
-    DEVEL=1
-    ENV=2
-    PERSONAL=3
-    TMP=4
-    WORK=5
+    export MY_LOC=("bin" "devel" "env" "personal" "tmp" "workstuff")
+    export BIN_DIR=0
+    export DEVEL_DIR=1
+    export ENV_DIR=2
+    export PERSONAL_DIR=3
+    export TMP_DIR=4
+    export WORK_DIR=5
 
     ###
     # basename(1) should be everywhere, but I've run into
@@ -49,6 +49,7 @@ then
         fi
         echo $bn
     }
+    export -f myBasename
 
     ###
     # As mentioned above, 
@@ -69,20 +70,21 @@ then
             echo "Usage: reSource <filename>"
         fi
     }
+    export -f reSource
 
     ###
     # Make sure the basic directory structure is in place.
     function bootstrapStandardDirs () {
         local status
         # Begin with ~/env - the source of all truth
-        if [[ -d ${HOME}/${MYDIR[$ENV]} ]]
+        if [[ -d ${HOME}/${MY_LOC[$ENV_DIR]} ]]
         then
-            cd ${HOME}/${MYDIR[$ENV]}
+            cd ${HOME}/${MY_LOC[$ENV_DIR]}
             if [[ $? -eq 0 ]]
             then
                 # ...now create dummy versions of all the
                 # other standard dirs under it.
-                for dir in ${MYDIR[*]}
+                for dir in ${MY_LOC[*]}
                 do
                     if [[ ! -d $dir ]]
                     then
@@ -134,6 +136,7 @@ then
             status=$(exit 0)
         fi
     }
+    export -f bootstrapStandardDirs
 
 	###
     # syncenv() syncs my "dot files" and other assorted shell creature comforts
@@ -156,7 +159,7 @@ then
                 echo "FATAL: Unable to validate/create basic directory structure."
                 echo "FATAL: No sync performed."
             else
-                cd ${HOME}/${MYDIR[$ENV]}
+                cd ${HOME}/${MY_LOC[$ENV_DIR]}
 
                 local TargetPath
                 for TargetHost in $*
@@ -175,5 +178,6 @@ then
             fi
         fi
 	}
+	export -f syncenv
 
 fi

@@ -25,13 +25,13 @@ else
     ###
     # Standard directories I always use; just in case the file
     # above goes missing.
-    export MYDIR=("bin" "devel" "env" "personal" "tmp" "workstuff")
-    BIN=0
-    DEVEL=1
-    ENV=2
-    PERSONAL=3
-    TMP=4
-    WORK=5
+    export MY_LOC=("bin" "devel" "env" "personal" "tmp" "workstuff")
+    export BIN_DIR=0
+    export DEVEL_DIR=1
+    export ENV_DIR=2
+    export PERSONAL_DIR=3
+    export TMP_DIR=4
+    export WORK_DIR=5
 fi
 
 umask 022
@@ -518,8 +518,8 @@ ${Cyan}\!${Color_Off}\
     alias psme="ps auxww | egrep \"^(USER|${USER})\" | sort"
     # Safety first
     alias rm="rm -i"
-    alias sp=". ${HOME}/${MYDIR[$ENV]}/.bashrc"
-    alias vp="vi ${HOME}/${MYDIR[$ENV]}/.bashrc"
+    alias sp=". ${HOME}/${MY_LOC[$ENV_DIR]}/.bashrc"
+    alias vp="vi ${HOME}/${MY_LOC[$ENV_DIR]}/.bashrc"
 
     ###
     # IP transforms
