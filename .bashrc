@@ -64,7 +64,7 @@ THIS_HOST=($( perl -e 'use Sys::Hostname;
                        push @host, ( $ThisHost =~ /\.(office\.|local\Z)/ ? "corp" : "prod" );
                        
                        # Are we inside a vm?  Trivial check.
-                       push @host, ( (-f "/var/run/vmware_guestd.pid")   ? "IsVM" : "NotVM" );
+                       push @host, ( (-f glob("/var/run/vmware[-_]guestd.pid"))   ? "IsVM" : "NotVM" );
                        
                        print STDOUT join(" ", @host);
                       '
@@ -83,7 +83,7 @@ fi
 
 ###
 # Once you travel down this $PATH, forever will it dominate your destiny
-export PATH=/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/X11R6/bin:~/bin:~
+export PATH=/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/X11R6/bin:~/bin:~
 
 ###
 # Only need the rest of this if I'm working interactively ($PS1 is set)
@@ -386,7 +386,7 @@ then
             then
                 GitStatus="$($GIT status 2> /dev/null)"
                 BranchPattern="^# On branch ([^${IFS}]*)"
-                RemotePattern="# Your branch is (.*) of"
+                RemotePattern="# Your branch is (.*) "
                 DivergePattern="# Your branch and (.*) have diverged"
 
                 if [[ ! ( ${GitStatus} =~ "working directory clean" ) ]]
