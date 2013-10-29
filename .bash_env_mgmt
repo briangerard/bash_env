@@ -138,17 +138,17 @@ then
     }
     export -f bootstrapStandardDirs
 
-	###
+    ###
     # syncenv() syncs my "dot files" and other assorted shell creature comforts
     # to a specified host.  
-	#
-	# Note that some of the hosts may require a proxy to reach.  That should
-	# be taken care of in ~/.ssh/config
+    #
+    # Note that some of the hosts may require a proxy to reach.  That should
+    # be taken care of in ~/.ssh/config
     # 
     # Removing the following files, for now...
     #                             $ENV{"HOME"} . "/.gdbinit",
     #                             $ENV{"HOME"} . "/bin/vmssh",
-	function syncenv () {
+    function syncenv () {
         if [[ -z $1 ]]
         then
             echo "Usage: syncenv [local] [list of hosts]"
@@ -177,7 +177,7 @@ then
                 cd - &> /dev/null
             fi
         fi
-	}
-	export -f syncenv
+    }
+    export -f syncenv
 
 fi

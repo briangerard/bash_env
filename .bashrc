@@ -5,10 +5,10 @@
 # Source global definitions
 if   [[ -f /etc/bashrc ]]
 then
-	. /etc/bashrc
+    . /etc/bashrc
 elif [[ -f /etc/bash.bashrc ]]
 then
-	. /etc/bash.bashrc
+    . /etc/bash.bashrc
 fi
 
 # Grab any local settings
@@ -209,7 +209,7 @@ then
     ###
     # Let's see what the state of the ssh-agent is.  Only to be done on
     # the home host, and only assuming we can get ssh-agent stuff going.
-	if [[    "${THIS_HOST[$NODENAME]}" = "$HOME_HOST" \
+    if [[    "${THIS_HOST[$NODENAME]}" = "$HOME_HOST" \
          && -x "$MYSSHADD"   \
          && -x "$MYSSHAGENT" \
        ]] # { SSHAGENT_COND
@@ -458,8 +458,8 @@ then
     # 
     function currentPrompt () {
         PS1="${IGreen}${ScreenName:+"#${ScreenName}# "}${BWhite}${THIS_HOST[$SHORTNAME]}${Color_Off}\
-${IS_VM:+${BRed}[VM]${Color_Off}} - \
-${Purple}\w${Color_Off}$(gitStatusTag) : \
+${IS_VM:+${BRed}[VM]${Color_Off}}${Yellow} - ${Color_Off}\
+${Purple}\w${Color_Off}$(gitStatusTag)${Yellow} : ${Color_Off}\
 ${Cyan}\!${Color_Off}\
 \nYes, My Liege? \$ "
 }
@@ -499,19 +499,19 @@ ${Cyan}\!${Color_Off}\
     #   sleep 10; alert
     alias alert='notify-send --urgency=low -i "$([[ $? = 0 ]] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
-	# Laziness, puuure laziness.  :)
+    # Laziness, puuure laziness.  :)
     alias a=alias
     alias agent="exec $MYSSHAGENT /bin/bash"
     alias c=clear
     alias cdb="cd ~/bin"
     alias cdd="cd ~/devel"
+    alias cde="cd ~/env"
     alias cdp="cd ~/personal"
     alias cdt="cd ~/tmp"
     alias cdw="cd ~/workstuff"
-    alias dusk="du -sk"
     alias gzcat="gzip -dc"
     alias h="history 25"
-	alias m=make
+    alias m=make
     alias mailfile="vim -c 'set filetype=mail'"
     alias pd=perldoc
     alias pf="perldoc -f"
@@ -596,6 +596,7 @@ ${Cyan}\!${Color_Off}\
     ###
     # Functional equivalents to old tcsh aliases and miscellaneous
     # other functions.
+    function dusk () { du -sk $*; }
     function lme  () { ls -ls $* | grep $USER; }
     function lstf () { ls -l  $* | grep "^-";  }
     function lstd () { ls -l  $* | grep "^d";  }
@@ -786,6 +787,58 @@ ${Cyan}\!${Color_Off}\
         fi
     }
 
+    # Takes a pattern (that should match Hosts in ~/.ssh/config)
+    # and a command to run.  Runs the command on matching Hosts.
+    function runon () {
+        if [[ $# -ne 1 && $# -ne 2 ]]
+        then
+            echo "Usage: runon <pattern> [command]"
+            echo "got $* ($#)"
+        else
+            if [[ ! -f ${HOME}/.ssh/config ]]
+            then
+                echo "ERROR: ${HOME}/.ssh/config: No such file."
+            else
+                pattern=$1
+                if [[ $# -eq 2 ]]
+                then
+                    command=$2
+                else
+                    command=''
+                fi
+                for host in $(grep "^Host .*${pattern}" ${HOME}/.ssh/config | awk '{print $2}')
+                do
+                    echo -e "${BIBlue}${On_White}$host :${Color_Off}"
+                    ssh $host $command
+                done
+            fi
+        fi
+    }
+
+    # Show historical package management activities
+    function apt-history () {
+        local dpkgLog="/var/log/dpkg"
+        local sudoIfNeeded=""
+        if [[ ! -r $dpkgLog ]]
+        then
+            sudoIfNeeded="sudo"
+        fi
+        case "$1" in
+            install|upgrade|remove)
+                $sudoIfNeeded grep "$1 " /var/log/dpkg.log
+            ;;
+            rollback)
+                $sudoIfNeeded grep upgrade /var/log/dpkg.log | \
+                grep "$2" -A10000000 | \
+                grep "$3" -B10000000 | \
+                awk '{print $4"="$5}'
+            ;;
+            *)
+                cat /var/log/dpkg.log
+            ;;
+        esac
+    }
+
     ###
     #
     # /Aliases and functions. }
@@ -794,24 +847,24 @@ ${Cyan}\!${Color_Off}\
 
     ###
     # Random tagline generator - disabled for now.
-	if [ 0 ] # { RANDSIG_COND
-	then
+    if [ 0 ] # { RANDSIG_COND
+    then
 
-		alias	resig='/bin/kill -HUP `cat $HOME/randsig.pid`'
-		alias	seti="screen -dr seti"
-		alias	smutt="screen -S mutt mutt"
+        alias resig='/bin/kill -HUP `cat $HOME/randsig.pid`'
+        alias seti="screen -dr seti"
+        alias smutt="screen -S mutt mutt"
 
-		if [[ -s $HOME/randsig.pid ]] # { RANDSIGPID_COND
-		then
-			echo Not starting randsig : Already running.
+        if [[ -s $HOME/randsig.pid ]] # { RANDSIGPID_COND
+        then
+            echo Not starting randsig : Already running.
         elif [[ -x "$HOME/bin/randsig" ]] # } Else - RANDSIGPID_COND {
         then
-		    echo -n "Starting randsig... "
-    		/bin/rm -f $HOME/randsig.pid &> /dev/null
-    		$HOME/bin/randsig &
-    		echo Done\!
+            echo -n "Starting randsig... "
+            /bin/rm -f $HOME/randsig.pid &> /dev/null
+            $HOME/bin/randsig &
+            echo Done\!
         fi # End - RANDSIGPID_COND }
 
-	fi # End - RANDSIG_COND }
+    fi # End - RANDSIG_COND }
 
 fi # End if - INTERACTIVE_COND }

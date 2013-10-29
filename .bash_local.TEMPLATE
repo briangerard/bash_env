@@ -1,0 +1,14 @@
+# $HOME_HOST is used to indicate the desktop, laptop, or other physical
+# host where I actually login and from which I log in to other hosts in
+# a network.  Kind of the "master" host, in other words.  Also, the only
+# place I might need mail, browser, or X-windows settings, for example.
+# No default.
+#HOME_HOST=
+
+# If $GitStatusFont is set to "fancy" (or, really, any string that
+# contains the string "fancy"), the git status portion of the prompt
+# will use the extended UTF-8 characters.  If it's not set, or it's
+# set to anything else, the more widely available characters will
+# be used.
+# No default.  (Ie - "not fancy")
+#GitStatusFont=
