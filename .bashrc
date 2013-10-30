@@ -284,6 +284,7 @@ then
 
         # Intense colors
         IGreen="${Esc}[0;92m"
+        IPurple="${Esc}[0;95m"
 
         # Bold colors
         BRed="${Esc}[1;31m"
@@ -350,9 +351,9 @@ then
         Divergent="${BIYellow} \xe2\x98\xa2 "
 
         # UTF-8 N-Ary circled times operator, in bold intense red
-        NotARepo="${BIRed} \xe2\xa8\x82"
+        NotARepo="${BIRed} \xe2\xa8\x82 "
         # UTF-8 N-Ary circled times operator, in bold intense blue
-        GitNotInstalled="${BIBlue} \xe2\xa8\x82"
+        GitNotInstalled="${BIBlue} \xe2\xa8\x82 "
 
     fi
 
@@ -459,7 +460,7 @@ then
     function currentPrompt () {
         PS1="${IGreen}${ScreenName:+"#${ScreenName}# "}${BWhite}${THIS_HOST[$SHORTNAME]}${Color_Off}\
 ${IS_VM:+${BRed}[VM]${Color_Off}}${Yellow} - ${Color_Off}\
-${Purple}\w${Color_Off}$(gitStatusTag)${Yellow} : ${Color_Off}\
+${IPurple}\w${Color_Off}$(gitStatusTag)${Yellow} : ${Color_Off}\
 ${Cyan}\!${Color_Off}\
 \nYes, My Liege? \$ "
 }
