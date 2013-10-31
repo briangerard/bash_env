@@ -16,11 +16,16 @@
 # #endif
 # ...trick, but for the shell.  :)
 #
-if [[    ${loaded_bash_env_mgmt:-NOT_LOADED}  != "LOADED" \
-      || ${reload_bash_env_mgmt:-DO_NOT_LOAD}  = "RELOAD" ]]
-then
-    export loaded_bash_env_mgmt="LOADED"
-    export reload_bash_env_mgmt="DO_NOT_LOAD"
+###
+### This isn't working so well; $MY_LOC can't be exported (see
+### bash(1), under "Bugs"), and hence child shells (under X, for
+### example) don't get my paths.  Commenting out for now.
+###
+### if [[    ${loaded_bash_env_mgmt:-NOT_LOADED}  != "LOADED" \
+###       || ${reload_bash_env_mgmt:-DO_NOT_LOAD}  = "RELOAD" ]]
+### then
+###     export loaded_bash_env_mgmt="LOADED"
+###     export reload_bash_env_mgmt="DO_NOT_LOAD"
 
     ###
     # Standard directories I always use
@@ -32,45 +37,48 @@ then
     export TMP_DIR=4
     export WORK_DIR=5
 
-    ###
-    # basename(1) should be everywhere, but I've run into
-    # environments where surprising things are absent.
-    function myBasename () {
-        bn=""
-        if [[ -n $1 ]]
-        then
-            foundBasename=$(which basename)
-            if [[ -n $foundBasename && -x $foundBasename ]]
-            then
-                bn=$($foundBasename $1)
-            else
-                bn=$(echo $1 | sed -e 's/.*\/\([^\/][^\/]*)$/\1/')
-            fi
-        fi
-        echo $bn
-    }
-    export -f myBasename
 
-    ###
-    # As mentioned above, 
-    function reSource () {
-        if [[ -n $1 ]]
-        then
-            FileToLoad=$1
-            if [[ -f $FileToLoad ]]
-            then
-                ReloadVarName=$(myBasename $FileToLoad)
-                ReloadVarName=$(echo $ReloadVarName | sed -e 's/^\.*/reload_/')
-                eval ${ReloadVarName}=RELOAD
-                . $FileToLoad
-            else
-                echo "No such file: $FileToLoad"
-            fi
-        else
-            echo "Usage: reSource <filename>"
-        fi
-    }
-    export -f reSource
+### Don't need these until the single-inclusion stuff works.
+###
+###     ###
+###     # basename(1) should be everywhere, but I've run into
+###     # environments where surprising things are absent.
+###     function myBasename () {
+###         bn=""
+###         if [[ -n $1 ]]
+###         then
+###             foundBasename=$(which basename)
+###             if [[ -n $foundBasename && -x $foundBasename ]]
+###             then
+###                 bn=$($foundBasename $1)
+###             else
+###                 bn=$(echo $1 | sed -e 's/.*\/\([^\/][^\/]*)$/\1/')
+###             fi
+###         fi
+###         echo $bn
+###     }
+###     export -f myBasename
+### 
+###     ###
+###     # As mentioned above, 
+###     function reSource () {
+###         if [[ -n $1 ]]
+###         then
+###             FileToLoad=$1
+###             if [[ -f $FileToLoad ]]
+###             then
+###                 ReloadVarName=$(myBasename $FileToLoad)
+###                 ReloadVarName=$(echo $ReloadVarName | sed -e 's/^\.*/reload_/')
+###                 eval ${ReloadVarName}=RELOAD
+###                 . $FileToLoad
+###             else
+###                 echo "No such file: $FileToLoad"
+###             fi
+###         else
+###             echo "Usage: reSource <filename>"
+###         fi
+###     }
+###     export -f reSource
 
     ###
     # Make sure the basic directory structure is in place.
@@ -180,4 +188,4 @@ then
     }
     export -f syncenv
 
-fi
+### fi
