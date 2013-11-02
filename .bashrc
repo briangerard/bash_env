@@ -25,13 +25,25 @@ else
     ###
     # Standard directories I always use; just in case the file
     # above goes missing.
-    export MY_LOC=("bin" "devel" "env" "personal" "tmp" "workstuff")
     export BIN_DIR=0
     export DEVEL_DIR=1
     export ENV_DIR=2
     export PERSONAL_DIR=3
     export TMP_DIR=4
     export WORK_DIR=5
+    function myPath() {
+        local thePaths=( "${HOME}/bin" "${HOME}/devel"
+                         "${HOME}/env" "${HOME}/personal"
+                         "${HOME}/tmp" "${HOME}/workstuff" )
+        if [[ -n $1 ]]; then case $1 in
+                    all) echo ${thePaths[*]} ;;
+            ''|*[!0-9]*) ;;
+                      *) if [[ $1 -le ${#thePaths} ]]; then
+                             echo ${thePaths[$1]}
+                         fi ;;
+            esac
+        fi
+    }
 fi
 
 umask 022
@@ -519,8 +531,8 @@ ${Cyan}\!${Color_Off}\
     alias psme="ps auxww | egrep \"^(USER|${USER})\" | sort"
     # Safety first
     alias rm="rm -i"
-    alias sp=". ${HOME}/${MY_LOC[$ENV_DIR]}/.bashrc"
-    alias vp="vi ${HOME}/${MY_LOC[$ENV_DIR]}/.bashrc"
+    alias sp=". ${HOME}/$(myPath $ENV_DIR)/.bashrc"
+    alias vp="vi ${HOME}/$(myPath $ENV_DIR)/.bashrc"
 
     ###
     # IP transforms

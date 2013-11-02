@@ -16,20 +16,14 @@
 # #endif
 # ...trick, but for the shell.  :)
 #
-###
-### This isn't working so well; $MY_LOC can't be exported (see
-### bash(1), under "Bugs"), and hence child shells (under X, for
-### example) don't get my paths.  Commenting out for now.
-###
-### if [[    ${loaded_bash_env_mgmt:-NOT_LOADED}  != "LOADED" \
-###       || ${reload_bash_env_mgmt:-DO_NOT_LOAD}  = "RELOAD" ]]
-### then
-###     export loaded_bash_env_mgmt="LOADED"
-###     export reload_bash_env_mgmt="DO_NOT_LOAD"
+if [[    ${loaded_bash_env_mgmt:-NOT_LOADED}  != "LOADED" \
+      || ${reload_bash_env_mgmt:-DO_NOT_LOAD}  = "RELOAD" ]]
+then
+    export loaded_bash_env_mgmt="LOADED"
+    export reload_bash_env_mgmt="DO_NOT_LOAD"
 
     ###
-    # Standard directories I always use
-    export MY_LOC=("bin" "devel" "env" "personal" "tmp" "workstuff")
+    # Standard directories I always use.
     export BIN_DIR=0
     export DEVEL_DIR=1
     export ENV_DIR=2
@@ -37,62 +31,94 @@
     export TMP_DIR=4
     export WORK_DIR=5
 
+    ###
+    # I tried using an array (so the _DIR vars were simple indices), but you
+    # can't export an array variable in bash (see bash(1), under "Bugs").  The
+    # practical consequence of that is that child shells (under X, for
+    # instance) wouldn't inherit the array, so a number of functions wouldn't
+    # work.
+    function myPath() {
+        local thePaths=(
+            "${HOME}/bin"
+            "${HOME}/devel"
+            "${HOME}/env"
+            "${HOME}/personal"
+            "${HOME}/tmp"
+            "${HOME}/workstuff"
+        )
+        if [[ -n $1 ]]
+        then
+            case $1 in
+                all)
+                    echo ${thePaths[*]}
+                    ;;
+                ''|*[!0-9]*)
+                    ;;
+                *)
+                    if [[ $1 -le ${#thePaths} ]]
+                    then
+                        echo ${thePaths[$1]}
+                    fi
+                    ;;
+            esac
+        fi
+    }
+    export -f myPath
 
-### Don't need these until the single-inclusion stuff works.
-###
-###     ###
-###     # basename(1) should be everywhere, but I've run into
-###     # environments where surprising things are absent.
-###     function myBasename () {
-###         bn=""
-###         if [[ -n $1 ]]
-###         then
-###             foundBasename=$(which basename)
-###             if [[ -n $foundBasename && -x $foundBasename ]]
-###             then
-###                 bn=$($foundBasename $1)
-###             else
-###                 bn=$(echo $1 | sed -e 's/.*\/\([^\/][^\/]*)$/\1/')
-###             fi
-###         fi
-###         echo $bn
-###     }
-###     export -f myBasename
-### 
-###     ###
-###     # As mentioned above, 
-###     function reSource () {
-###         if [[ -n $1 ]]
-###         then
-###             FileToLoad=$1
-###             if [[ -f $FileToLoad ]]
-###             then
-###                 ReloadVarName=$(myBasename $FileToLoad)
-###                 ReloadVarName=$(echo $ReloadVarName | sed -e 's/^\.*/reload_/')
-###                 eval ${ReloadVarName}=RELOAD
-###                 . $FileToLoad
-###             else
-###                 echo "No such file: $FileToLoad"
-###             fi
-###         else
-###             echo "Usage: reSource <filename>"
-###         fi
-###     }
-###     export -f reSource
+
+    ###
+    # basename(1) should be everywhere, but I've run into
+    # environments where surprising things are absent.
+    function myBasename () {
+        bn=""
+        if [[ -n $1 ]]
+        then
+            foundBasename=$(which basename)
+            if [[ -n $foundBasename && -x $foundBasename ]]
+            then
+                bn=$($foundBasename $1)
+            else
+                bn=$(echo $1 | sed -e 's/.*\/\([^\/][^\/]*)$/\1/')
+            fi
+        fi
+        echo $bn
+    }
+    export -f myBasename
+
+    ###
+    # As mentioned above, 
+    function reSource () {
+        if [[ -n $1 ]]
+        then
+            FileToLoad=$1
+            if [[ -f $FileToLoad ]]
+            then
+                ReloadVarName=$(myBasename $FileToLoad)
+                ReloadVarName=$(echo $ReloadVarName | sed -e 's/^\.*/reload_/')
+                eval ${ReloadVarName}=RELOAD
+                . $FileToLoad
+            else
+                echo "No such file: $FileToLoad"
+            fi
+        else
+            echo "Usage: reSource <filename>"
+        fi
+    }
+    export -f reSource
 
     ###
     # Make sure the basic directory structure is in place.
     function bootstrapStandardDirs () {
         local status
         # Begin with ~/env - the source of all truth
-        if [[ -d ${HOME}/${MY_LOC[$ENV_DIR]} ]]
+        if [[ -d ${HOME}/$(myPath $ENV_DIR) ]]
         then
-            cd ${HOME}/${MY_LOC[$ENV_DIR]}
+            cd ${HOME}/$(myPath $ENV_DIR)
             if [[ $? -eq 0 ]]
             then
                 # ...now create dummy versions of all the
                 # other standard dirs under it.
-                for dir in ${MY_LOC[*]}
+                for dir in $(myPath all)
                 do
                     if [[ ! -d $dir ]]
                     then
@@ -167,7 +193,7 @@
                 echo "FATAL: Unable to validate/create basic directory structure."
                 echo "FATAL: No sync performed."
             else
-                cd ${HOME}/${MY_LOC[$ENV_DIR]}
+                cd ${HOME}/$(myPath $ENV_DIR)
 
                 local TargetPath
                 for TargetHost in $*
@@ -188,4 +214,4 @@
     }
     export -f syncenv
 
-### fi
+fi

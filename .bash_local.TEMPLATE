@@ -1,3 +1,12 @@
+# .bashrc extension
+# vim: set filetype=sh:
+
+###
+# See .bash_env_mgmt for an explanation of this construct
+if [[    ${loaded_bash_local:-NOT_LOADED}  != "LOADED" \
+      || ${reload_bash_local:-DO_NOT_LOAD}  = "RELOAD" ]]
+then
+
 # $HOME_HOST is used to indicate the desktop, laptop, or other physical
 # host where I actually login and from which I log in to other hosts in
 # a network.  Kind of the "master" host, in other words.  Also, the only
@@ -12,3 +21,5 @@
 # be used.
 # No default.  (Ie - "not fancy")
 #GitStatusFont=
+
+fi

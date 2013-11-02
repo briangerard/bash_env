@@ -1,3 +1,20 @@
+Version 1.2.0
+* brian, 2013/11/01
+*	* Added runon() and apt-history()
+*	* Added include.these and exclude.these for use in syncenv()
+*	* Renamed .bash_local to .bash_local.TEMPLATE and excluded it
+*	  from syncenv()'s rsync.
+*	* Recreated .bash_local as a symlink to ../.bash_local
+*	* Several UTF changes/corrections.
+*	* Finally found a set of UTF chars which work on Linux.  Woot!
+*	* Changed sp() and vp() to work on the copy in $(myPath $ENV_DIR)
+*	  instead of $HOME.
+*	* Camel-cased reSource()
+*	* Fixes:
+*	*	Corrected the git remote branch regex.
+*	*	Vmware detectoion pattern.
+*	*	Directory index variables renamed.
+
 Version 1.1.0
 * brian, 2013/09/22
 *	* Split $MYDIRS, syncenv(), bootstrapStandardDirs() into
