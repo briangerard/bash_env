@@ -97,6 +97,12 @@ fi
 # Once you travel down this $PATH, forever will it dominate your destiny
 export PATH=/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/X11R6/bin:~/bin:~
 
+if [[ -d "${HOME}/.rbenv" ]]
+then
+    export PATH=${HOME}/.rbenv/bin:$PATH
+    eval "$(rbenv init -)"
+fi
+
 ###
 # Only need the rest of this if I'm working interactively ($PS1 is set)
 if [[ -n "$PS1" ]] # { INTERACTIVE_COND
@@ -531,8 +537,8 @@ ${Cyan}\!${Color_Off}\
     alias psme="ps auxww | egrep \"^(USER|${USER})\" | sort"
     # Safety first
     alias rm="rm -i"
-    alias sp=". ${HOME}/$(myPath $ENV_DIR)/.bashrc"
-    alias vp="vi ${HOME}/$(myPath $ENV_DIR)/.bashrc"
+    alias sp=". $(myPath $ENV_DIR)/.bashrc"
+    alias vp="vi $(myPath $ENV_DIR)/.bashrc"
 
     ###
     # IP transforms
