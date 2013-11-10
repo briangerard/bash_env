@@ -88,6 +88,8 @@ then
     ###
     # As mentioned above, 
     function reSource () {
+        local FileToLoad
+        local ReloadVarName
         if [[ -n $1 ]]
         then
             FileToLoad=$1
@@ -111,9 +113,9 @@ then
     function bootstrapStandardDirs () {
         local status
         # Begin with ~/env - the source of all truth
-        if [[ -d ${HOME}/$(myPath $ENV_DIR) ]]
+        if [[ -d $(myPath $ENV_DIR) ]]
         then
-            cd ${HOME}/$(myPath $ENV_DIR)
+            cd $(myPath $ENV_DIR)
             if [[ $? -eq 0 ]]
             then
                 # ...now create dummy versions of all the
