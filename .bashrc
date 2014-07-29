@@ -49,8 +49,8 @@ fi
 umask 022
 
 ##
-# This should be set in .bash_local; setting a default
-# so I have a value to use in comparisons.
+# This should be set in .bash_local; setting a default (though bogus)
+# value so I have something to use in comparisons.
 HOME_HOST=${HOME_HOST:-NOT_HERE}
 
 ##
@@ -65,7 +65,7 @@ THIS_HOST=($( perl -e 'use Sys::Hostname;
                        my $ThisHost  = hostname();         # "foo.bar.gorp.com"
 
                        my $ShortHost = $ThisHost;
-                       $ShortHost   =~ s/\.webassign\.net\Z//; # "foo.bar"
+                       $ShortHost   =~ s/(?:\.[^.]+){2}\Z//; # "foo.bar"
 
                        my $NodeName  = $ThisHost;
                        $NodeName    =~ s/\..*//;           # "foo"
@@ -319,8 +319,8 @@ then
     # A good list of UTF-8 characters I found is at
     # http://www.fileformat.info/info/charset/UTF-8/list.htm
     #
-    # First, the fancy characters.  I have not yet found a Linux font
-    # that includes all of these characters.  They work on Mac Terminals,
+    # First, the fancy characters.  I have not yet found a Linux
+    # font that includes all of these.  They work on Mac Terminals,
     # but not on Linux.  The search continues.
     #
     # The following characters can be found on
@@ -418,10 +418,11 @@ then
                 # Add an else if or two here if you want to get more specific
                 if [[ $GitStatus =~ $RemotePattern ]]
                 then
-                    if [[ ${BASH_REMATCH[1]} == "ahead" ]]
+                    if   [[ ${BASH_REMATCH[1]} == "ahead" ]]
                     then
                         Remote=$LocalAhead
-                    else
+                    elif [[ ${BASH_REMATCH[1]} == "behind" ]]
+                    then
                         Remote=$LocalBehind
                     fi
                 fi
