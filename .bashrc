@@ -368,16 +368,51 @@ then
         # UTF-8 Radioactive sign, in bold intense yellow
         Divergent="${BIYellow} \xe2\x98\xa2 "
 
-        # UTF-8 N-Ary circled times operator, in bold intense red
-        NotARepo="${BIRed} \xe2\xa8\x82 "
+        # UTF-8 N-Ary circled dot operator, in bold intense blue
+        NotARepo="${BIBlue} \xe2\xa8\x80 "
         # UTF-8 N-Ary circled times operator, in bold intense blue
         GitNotInstalled="${BIBlue} \xe2\xa8\x82 "
+        # UTF-8 N-Ary circled plus operator, in bold intense yellow
+        GitPromptDisabled="${BIYellow} \xe2\xa8\x81 "
 
     fi
 
-    GIT=$(which git 2> /dev/null)
-    GIT=${GIT:-NO_GIT}
+    ###
+    # Sometimes having to check git for status every time I hit <enter>
+    # slows things down.  In a very large, or very dirty repo, for instance,
+    # or when the code lives on a sluggish NFS share.  This gives me a
+    # way to turn it off when needed.
+    function gitprompt () {
+        # Pretend we're just logging in
+        if [[ $# -eq 1 && $1 =~ reset ]]
+        then
+            GITPROMPTSTATUS=UNINITIALIZED
+        fi
+
+        # The first time the function is called, we find git and
+        # default to enabling the git-aware prompt.
+        if [[ ${GITPROMPTSTATUS:-UNINITIALIZED} = "UNINITIALIZED" ]]
+        then
+            # See if there's a git somewhere about.
+            GIT=$(which git 2> /dev/null)
+            GIT=${GIT:-NO_GIT}
     
+            GITPROMPTSTATUS=enabled
+        fi
+
+        if [[ $# -eq 0 ]]
+        then
+            echo $GITPROMPTSTATUS
+        else
+            if [[ $1 =~ (on|enable|reset) ]]
+            then
+                GITPROMPTSTATUS=enabled
+            else
+                GITPROMPTSTATUS=disabled
+            fi
+        fi
+    }
+
     ###
     # Credit where credit is due here.
     #
@@ -395,9 +430,12 @@ then
     # from that, it's just some coloring and aesthetic tweaks to suit me.
     #
     function gitStatusTag () {
-        if [[ $GIT = "NO_GIT" ]]
+        if [[ $(gitprompt) = "disabled" ]]
         then
-            echo -e $GitNotInstalled
+            echo -e "$GitPromptDisabled"
+        elif [[ $GIT = "NO_GIT" ]]
+        then
+            echo -e "$GitNotInstalled"
         else
             # Are we even in a git repo?
             $GIT rev-parse --is-inside-git-repository &> /dev/null
@@ -540,6 +578,14 @@ ${Cyan}\!${Color_Off}\
     alias rm="rm -i"
     alias sp=". $(myPath $ENV_DIR)/.bashrc"
     alias vp="vi $(myPath $ENV_DIR)/.bashrc"
+
+    # Git shortcuts (see "lazy", above :)
+    alias ga='git add'
+    alias gc='git commit'
+    alias gd='git diff'
+    alias gpl='git pull --rebase'
+    alias gps='git push'
+    alias gs='git status'
 
     ###
     # IP transforms
