@@ -368,8 +368,8 @@ then
         # UTF-8 Radioactive sign, in bold intense yellow
         Divergent="${BIYellow} \xe2\x98\xa2 "
 
-        # UTF-8 N-Ary circled dot operator, in bold intense blue
-        NotARepo="${BIBlue} \xe2\xa8\x80 "
+        # UTF-8 N-Ary circled dot operator, in bold intense green
+        NotARepo="${BIGreen} \xe2\xa8\x80 "
         # UTF-8 N-Ary circled times operator, in bold intense blue
         GitNotInstalled="${BIBlue} \xe2\xa8\x82 "
         # UTF-8 N-Ary circled plus operator, in bold intense yellow
@@ -412,6 +412,7 @@ then
             fi
         fi
     }
+    gitprompt enable
 
     ###
     # Credit where credit is due here.
@@ -479,7 +480,7 @@ then
 
                 echo -e " (${Branch})${Remote}${State}"
             else
-                echo -e " $NotARepo"
+                echo -e "$NotARepo"
             fi
         fi
     }
