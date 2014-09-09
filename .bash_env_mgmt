@@ -32,6 +32,24 @@ then
     export WORK_DIR=5
 
     ###
+    # Useful utility - joins an array using a provided character.
+    #
+    # Lifted straight out of
+    # http://stackoverflow.com/questions/1527049/bash-join-elements-of-an-array
+    #
+    # Example:
+    #   join , a b c
+    # Output:
+    #   a,b,c
+    #
+    function join() {
+        local IFS="$1"
+        shift
+        echo "$*"
+    }
+    export -f join
+
+    ###
     # I tried using an array (so the _DIR vars were simple indices), but you
     # can't export an array variable in bash (see bash(1), under "Bugs").  The
     # practical consequence of that is that child shells (under X, for
@@ -39,25 +57,29 @@ then
     # work.
     function myPath() {
         local thePaths=(
-            "${HOME}/bin"
-            "${HOME}/devel"
-            "${HOME}/env"
-            "${HOME}/personal"
-            "${HOME}/tmp"
-            "${HOME}/workstuff"
+            "bin"
+            "devel"
+            "env"
+            "personal"
+            "tmp"
+            "workstuff"
         )
+
         if [[ -n $1 ]]
         then
             case $1 in
                 all)
+                    eval echo "${HOME}/{$(join , ${thePaths[*]})}"
+                    ;;
+                names)
                     echo ${thePaths[*]}
                     ;;
                 ''|*[!0-9]*)
                     ;;
                 *)
-                    if [[ $1 -le ${#thePaths} ]]
+                    if [[ $1 -lt ${#thePaths[*]} ]]
                     then
-                        echo ${thePaths[$1]}
+                        echo "${HOME}/${thePaths[$1]}"
                     fi
                     ;;
             esac
@@ -120,7 +142,7 @@ then
             then
                 # ...now create dummy versions of all the
                 # other standard dirs under it.
-                for dir in $(myPath all)
+                for dir in $(myPath names)
                 do
                     if [[ ! -d $dir ]]
                     then
