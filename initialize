@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+shopt -s nocasematch
+
+WorkingDir=$(dirname ${BASH_SOURCE[0]})
+
+if [[ -f ${WorkingDir}/.bash_env_mgmt ]]
+then
+    . ${WorkingDir}/.bash_env_mgmt
+    cd $WorkingDir
+else
+    echo "FATAL: No .bash_env_mgmt in $WorkingDir"
+    exit 1
+fi
+
+Git=$(which git 2> /dev/null)
+if [[ $? -ne 0 ]]
+then
+    Git="NO_GIT"
+    echo "WARNING: No git found in your path - will be unable to complete the setup."
+    echo -n "Continue? [y/N] "
+    read yN
+    if [[ $yN =~ ^y ]]
+    then
+        echo "Continuing with non-git actions."
+    else
+        echo "Exiting."
+    fi
+fi
+
+# Set up the basic directory structure
+bootstrapStandardDirs
+
+# Figure out which .vimrc we'll be using - without git, Vundle can't do
+# its thing.
+if [[ ${Git:-NO_GIT} = "NO_GIT" ]]
+then
+    if [[ -f ".vimrc.NoVundle" ]]
+    then
+        ln -s .vimrc.NoVundle .vimrc
+    else
+        echo "FATAL: No .vimrc source candidate (.vimrc.NoVundle) available in $WorkingDir"
+    fi
+elif [[ -f ".vimrc.Vundle" ]]
+then
+    ln -s .vimrc.Vundle .vimrc
+else
+    echo "FATAL: No .vimrc source candidate (.vimrc.Vundle) available in $WorkingDir"
+fi
+
+# Now get things started.
+syncenv local
+
+# Assuming we're good to go in .vim land...
+if [[ -d ${HOME}/.vim ]]
+then
+    if [[ ${Git:-NO_GIT} != "NO_GIT" ]]
+    then
+        $Git clone https://github.com/gmarik/Vundle.vim.git ${HOME}/.vim/bundle/Vundle.vim
+    else
+        echo "No git found - skipping Vundle setup."
+    fi
+else
+    echo "WARNING: Bad syncenv?  No ${HOME}/.vim found."
+fi
