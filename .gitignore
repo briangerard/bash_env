@@ -1,4 +1,5 @@
 .ssh
+.vimrc
 bin
 env
 devel

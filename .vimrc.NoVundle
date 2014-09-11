@@ -18,9 +18,8 @@ set tabstop=4			" Four spaces per tab
 " Misc
 set matchpairs=(:),[:],{:},<:>	" What I can bounce on with %
 set backspace=indent,eol,start
-" Format this paragraph to 80 columns
-map <c-x> {!}fmt -w 80
 syntax on			" Syntax Hilighting
+" color settings
 set t_Co=256
 set t_AB=[48;5;%dm
 set t_AF=[38;5;%dm
@@ -54,7 +53,7 @@ if has("autocmd") " dnl
   " All mail settings should go here...
   autocmd FileType mail source ${HOME}/.vim.mail
   "
-  " For all text files set 'textwidth' to 78 characters.
+  " For all text files set 'textwidth' to 80 characters.
   autocmd FileType text setlocal textwidth=80 " dnl
   "
   " For perl files, make things tidy
