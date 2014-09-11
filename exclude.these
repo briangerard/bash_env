@@ -3,3 +3,5 @@
 exclude.these
 include.these
 .bash_local.TEMPLATE
+.vimrc.NoVundle
+.vimrc.Vundle
