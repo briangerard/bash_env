@@ -66,7 +66,7 @@ then
             cd $BundleDir
             $Git pull --rebase
         else
-            $Git clone https://github.com/gmarik/Vundle.vim.git ${HOME}/.vim/bundle/Vundle.vim
+            $Git clone https://github.com/gmarik/Vundle.vim.git ${BundleDir}
         fi
 
         Vim=$(which vim)
@@ -81,4 +81,36 @@ then
     fi
 else
     echo "WARNING: Bad syncenv?  No ${HOME}/.vim found."
+fi
+
+# Now on to rbenv...
+if [[ ${Git:-NO_GIT} != "NO_GIT" ]]
+then
+    RbenvDir="${HOME}/.rbenv"
+    RbenvCount=$(/bin/ls -A1 $RbenvDir | wc -l)
+    if [[ -d $RbenvDir && $RbenvCount -gt 0 ]]
+    then
+        cd $RbenvDir
+        $Git pull --rebase
+    else
+        $Git clone https://github.com/sstephenson/rbenv.git ${RbenvDir}
+    fi
+
+    RubybuildDir="${RbenvDir}/plugins/ruby-build"
+    RubybuildCount=$(/bin/ls -A1 $RubybuildDir | wc -l)
+    if [[ -d $RubybuildDir && $RubybuildCount -gt 0 ]]
+    then
+        cd $RubybuildDir
+        $Git pull --rebase
+    else
+        $Git clone https://github.com/sstephenson/ruby-build.git ${RubybuildDir}
+    fi
+
+    # And tmuxinator
+    export PATH=${HOME}/.rbenv/bin:$PATH
+    eval "$(rbenv init -)"
+    gem install tmuxinator
+
+else
+    echo "No git found - skipping rbenv setup."
 fi
