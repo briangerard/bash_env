@@ -83,9 +83,11 @@ else
     echo "WARNING: Bad syncenv?  No ${HOME}/.vim found."
 fi
 
-# Now on to rbenv...
+# Now on to rbenv, ruby, etc...
 if [[ ${Git:-NO_GIT} != "NO_GIT" ]]
 then
+    PreferredRubyVersion=2.1.2
+
     RbenvDir="${HOME}/.rbenv"
     RbenvCount=$(/bin/ls -A1 $RbenvDir | wc -l)
     if [[ -d $RbenvDir && $RbenvCount -gt 0 ]]
@@ -106,10 +108,21 @@ then
         $Git clone https://github.com/sstephenson/ruby-build.git ${RubybuildDir}
     fi
 
-    # And tmuxinator
+    # Spin up rbenv so I can install tmuxinator without sudo
     export PATH=${HOME}/.rbenv/bin:$PATH
     eval "$(rbenv init -)"
+
+    # Install my preferred ruby version (no-op if already there)...
+    rbenv install --skip-existing $PreferredRubyVersion
+
+    # ...and set rbenv to use it by default...
+    rbenv global $PreferredRubyVersion
+
+    # ...so that this doesn't fail with permission denied.
     gem install tmuxinator
+
+    # Now make sure it's runnable from the shell.
+    rbenv rehash
 
 else
     echo "No git found - skipping rbenv setup."
