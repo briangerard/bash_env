@@ -122,16 +122,20 @@ then
     HISTSIZE=1000
     HISTFILESIZE=2000
 
-    # append to the history file, don't overwrite it
+    # Append to the history file, don't overwrite it
     shopt -s histappend
 
-    # check the window size after each command and, if necessary,
+    # Check the window size after each command and, if necessary,
     # update the values of LINES and COLUMNS.
     shopt -s checkwinsize
 
-    # If set, the pattern "**" used in a pathname expansion context will
-    # match all files and zero or more directories and subdirectories.
-    shopt -s globstar
+    # This option isn't available until bash-4.x
+    if [[ $BASH_VERSION = "4" || $BASH_VERSION > "4" ]]
+    then
+        # If set, the pattern "**" used in a pathname expansion context will
+        # match all files and zero or more directories and subdirectories.
+        shopt -s globstar
+    fi
 
     # Match case-insensitively in [[ ]] regexes
     shopt -s nocasematch
