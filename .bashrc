@@ -487,7 +487,7 @@ then
 
                 echo -e " (${Branch})${Remote}${State}"
             else
-                echo -e "$NotARepo"
+                echo -e " $NotARepo"
             fi
         fi
     }
