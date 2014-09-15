@@ -60,7 +60,7 @@ then
     if [[ ${Git:-NO_GIT} != "NO_GIT" ]]
     then
         BundleDir="${HOME}/.vim/bundle/Vundle.vim"
-        BundleCount=$(/bin/ls -A1 $BundleDir | wc -l)
+        BundleCount=$(/bin/ls -A1 $BundleDir 2> /dev/null | wc -l)
         if [[ -d $BundleDir && $BundleCount -gt 0 ]]
         then
             cd $BundleDir
@@ -89,7 +89,7 @@ then
     PreferredRubyVersion=2.1.2
 
     RbenvDir="${HOME}/.rbenv"
-    RbenvCount=$(/bin/ls -A1 $RbenvDir | wc -l)
+    RbenvCount=$(/bin/ls -A1 $RbenvDir 2> /dev/null | wc -l)
     if [[ -d $RbenvDir && $RbenvCount -gt 0 ]]
     then
         cd $RbenvDir
@@ -99,7 +99,7 @@ then
     fi
 
     RubybuildDir="${RbenvDir}/plugins/ruby-build"
-    RubybuildCount=$(/bin/ls -A1 $RubybuildDir | wc -l)
+    RubybuildCount=$(/bin/ls -A1 $RubybuildDir 2> /dev/null | wc -l)
     if [[ -d $RubybuildDir && $RubybuildCount -gt 0 ]]
     then
         cd $RubybuildDir
