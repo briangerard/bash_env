@@ -5,8 +5,6 @@
 .ssh/
 .vim/
 .vimrc
-ChangeLog
-README.md
 bin/
 devel/
 env/

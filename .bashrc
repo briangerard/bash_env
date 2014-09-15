@@ -412,6 +412,9 @@ then
             fi
         fi
     }
+
+    ###
+    # Actually turn the prompt on, for starters.  :)
     gitprompt enable
 
     ###
@@ -584,9 +587,22 @@ ${Cyan}\!${Color_Off}\
     alias ga='git add'
     alias gc='git commit'
     alias gd='git diff'
+    alias gdc="git diff --cached"
     alias gpl='git pull --rebase'
     alias gps='git push'
     alias gs='git status'
+    alias gsl="git log --format='%C(yellow)%h%Creset %C(white)[%Cgreen%an%C(white)]%Creset %s'"
+
+    # Something to let me see what *would* have been done, if I had merged.
+    function gitpremerge() {
+        if [[ ! -z $1 ]]
+        then
+            git pull --rebase
+            git merge-tree $(git merge-base FETCH_HEAD $1) FETCH_HEAD $1
+        else
+            echo "Usage: gitpremerge <branch>"
+        fi
+    }
 
     ###
     # IP transforms
@@ -663,10 +679,20 @@ ${Cyan}\!${Color_Off}\
     ###
     # Functional equivalents to old tcsh aliases and miscellaneous
     # other functions.
+
+    # 'du -sk' on a directory (or the current directory, if unspecified)
     function dusk () { du -sk $*; }
+
+    # List files owned by me in the specified directory (or the current directory, if unspecified)
     function lme  () { ls -ls $* | grep $USER; }
+
+    # List only regular files in the specified directory (or the current directory, if unspecified)
     function lstf () { ls -l  $* | grep "^-";  }
+
+    # List only directories in the specified directory (or the current directory, if unspecified)
     function lstd () { ls -l  $* | grep "^d";  }
+
+    # List only symlinks in the specified directory (or the current directory, if unspecified)
     function lstl () { ls -l  $* | grep "^l";  }
 
     # On some hosts, sometimes, connections to technobrat
