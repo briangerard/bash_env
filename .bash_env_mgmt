@@ -226,7 +226,7 @@ then
                     then
                         TargetPath="${HOME}/"
                     else
-                        TargetPath="${TargetHost}:\"~/\""
+                        TargetPath="${TargetHost}:~/"
                     fi
 
                     echo "$TargetHost : "
