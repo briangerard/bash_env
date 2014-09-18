@@ -20,6 +20,7 @@ fi
 # Tools for syncing and maintaining the local environment
 if [[ -f ${HOME}/.bash_env_mgmt ]]
 then
+    reload_bash_env_mgmt=RELOAD
     . ${HOME}/.bash_env_mgmt
 else
     ###
