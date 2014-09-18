@@ -95,7 +95,7 @@ fi
 
 ###
 # Once you travel down this $PATH, forever will it dominate your destiny
-export PATH=/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/sbin:/bin:/usr/X11R6/bin:~/bin:~
+export PATH=/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/X11R6/bin:~/bin:~
 
 if [[ -d "${HOME}/.rbenv" ]]
 then
@@ -450,9 +450,9 @@ then
             if [[ $? = 0 ]]
             then
                 GitStatus="$($GIT status 2> /dev/null)"
-                BranchPattern="^# On branch ([^${IFS}]*)"
-                RemotePattern="# Your branch is ([^ ]+) "
-                DivergePattern="# Your branch and (.*) have diverged"
+                BranchPattern="^(# )?On branch ([^${IFS}]*)"
+                RemotePattern="(# )?Your branch is ([^ ]+) "
+                DivergePattern="(# )?Your branch and (.*) have diverged"
 
                 if [[ ! ( ${GitStatus} =~ "working directory clean" ) ]]
                 then
@@ -464,10 +464,10 @@ then
                 # Add an else if or two here if you want to get more specific
                 if [[ $GitStatus =~ $RemotePattern ]]
                 then
-                    if   [[ ${BASH_REMATCH[1]} == "ahead" ]]
+                    if   [[ ${BASH_REMATCH[2]} == "ahead" ]]
                     then
                         Remote=$LocalAhead
-                    elif [[ ${BASH_REMATCH[1]} == "behind" ]]
+                    elif [[ ${BASH_REMATCH[2]} == "behind" ]]
                     then
                         Remote=$LocalBehind
                     fi
@@ -482,7 +482,7 @@ then
                 # Let me know what branch I'm on.
                 if [[ $GitStatus =~ $BranchPattern ]]
                 then
-                    Branch="${BIGreen}${BASH_REMATCH[1]}${Color_Off}"
+                    Branch="${BIGreen}${BASH_REMATCH[2]}${Color_Off}"
                 fi
 
                 echo -e " (${Branch})${Remote}${State}"
