@@ -50,9 +50,6 @@ if has("autocmd") " dnl
   " Read a new signature (Mail)
   autocmd FileType mail map <c-k> dG:r ${HOME}/sig<enter>
   "
-  " All mail settings should go here...
-  autocmd FileType mail source ${HOME}/.vim.mail
-  "
   " For all text files set 'textwidth' to 80 characters.
   autocmd FileType text setlocal textwidth=80 " dnl
   "

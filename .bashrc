@@ -158,6 +158,8 @@ then
     if [[ $? -ne 0 ]]
     then
         EDITOR=$(which vi)
+    else
+        alias vi=$EDITOR
     fi
     export EDITOR
     export EXINIT='set autoindent'
