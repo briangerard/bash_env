@@ -30,20 +30,28 @@ colo railscasts
 nnoremap <buffer> <silent> X :w<Enter>:!/usr/local/bin/perl -c -MVi::QuickFix %<Enter>
 nnoremap <buffer> <silent> E :cf <Enter>
 
-" Relative line numbering
-set relativenumber
+if v:version > 702
+    " Relative line numbering - added in v7.3
+    set relativenumber
+else
+    " Otherwise, just take what we have.
+    set number
+endif
 
 " Only do this part when compiled with support for autocommands.
 if has("autocmd") " dnl
  if !exists("autocommands_loaded")
   let autocommands_loaded = 1
 
-  " Absolute numbers when in insert mode, relative when in command mode
-  " Thanks to
-  " http://jeffkreeftmeijer.com/2012/relative-line-numbers-in-vim-for-super-fast-movement/
-  " for this trick.
-  autocmd InsertEnter * :set number
-  autocmd InsertLeave * :set relativenumber
+  " Relative line numbering - added in v7.3
+  if v:version > 702
+    " Absolute numbers when in insert mode, relative when in command mode
+    " Thanks to
+    " http://jeffkreeftmeijer.com/2012/relative-line-numbers-in-vim-for-super-fast-movement/
+    " for this trick.
+    autocmd InsertEnter * :set number
+    autocmd InsertLeave * :set relativenumber
+  endif
 
   " Enable file type detection.
   " Use the default filetype settings, so that mail gets 'tw' set to 72,
