@@ -106,7 +106,7 @@ if has("autocmd") " dnl
     " Thanks to
     " http://jeffkreeftmeijer.com/2012/relative-line-numbers-in-vim-for-super-fast-movement/
     " for this trick.
-    autocmd InsertEnter * :set relativenumber&
+    autocmd InsertEnter * :set relativenumber& number
     autocmd InsertLeave * :set relativenumber
   endif
 
