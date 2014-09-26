@@ -160,6 +160,7 @@ then
         EDITOR=$(which vi)
     else
         alias vi=$EDITOR
+        alias view="$EDITOR -R"
     fi
     export EDITOR
     export EXINIT='set autoindent'
