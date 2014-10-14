@@ -50,6 +50,19 @@ then
     export -f joinList
 
     ###
+    # Deduplicate a colon-delimited list (such as $PATH).  Preserves
+    # first-seen order, so foo:bar:foo:quux:bar:foo:splat will become
+    # simply foo:bar:quux:splat.
+    function uniqPath() {
+        echo $1 | perl -pe '
+                chomp;
+                map { $path{$_} = ++$pos unless $path{$_} } split /:/;
+                $_ = join(":", map { $_ } sort { $path{$a} <=> $path{$b} } keys %path)
+        '
+    }
+    export -f uniqPath
+
+    ###
     # I tried using an array (so the _DIR vars were simple indices), but you
     # can't export an array variable in bash (see bash(1), under "Bugs").  The
     # practical consequence of that is that child shells (under X, for

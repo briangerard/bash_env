@@ -96,11 +96,11 @@ fi
 
 ###
 # Once you travel down this $PATH, forever will it dominate your destiny
-export PATH=/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/X11R6/bin:~/bin:~
+export PATH=$(uniqPath "${PATH}:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/X11R6/bin:~/bin:~")
 
 if [[ -d "${HOME}/.rbenv" ]]
 then
-    export PATH=${HOME}/.rbenv/bin:$PATH
+    export PATH=$(uniqPath "${HOME}/.rbenv/bin:$PATH")
     eval "$(rbenv init -)"
 fi
 
