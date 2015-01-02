@@ -1,0 +1,28 @@
+#!/usr/bin/env perl
+###
+# What are the atime, mtime, and ctime for a file or files?
+###
+use strict;
+use warnings;
+
+if (scalar(@ARGV)) {
+    FILE_TO_CHECK:
+    while (my $file = shift) {
+        if ( -e $file ) {
+            my ($atime, $mtime, $ctime) = (stat $file)[8, 9, 10];
+
+            print "${file} ::\n",
+                  "\tatime : ", scalar(localtime($atime)), "\n",
+                  "\tmtime : ", scalar(localtime($mtime)), "\n",
+                  "\tctime : ", scalar(localtime($ctime)), "\n"
+                  ;
+        }
+        else {
+            print "No such file or directory: $file\n";
+            next FILE_TO_CHECK;
+        }
+    }
+}
+else {
+    print "Please specify a file or files to examine.\n";
+}

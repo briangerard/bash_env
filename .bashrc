@@ -627,63 +627,6 @@ ${Cyan}\!${Color_Off}\
     # ip to hex:      1.2.3.4 -> 01020304
     alias ip2h="perl -MSocket -e 'print +sprintf(q{%0.8x}, unpack(q{N}, inet_aton(shift))), qq{\n}'"
 
-    # Shows an IP and mask in dotted-quad and binary.
-    # Example:
-    # $ bincidr 1.2.3.4/24
-    # 1.2.3.4/24
-    # ==========
-    #   Dotted Quad:
-    #               1.       2.       3.       4
-    #      &      255.     255.     255.       0
-    #      =        1.       2.       3.       0
-    #   Binary:
-    #        00000001 00000010 00000011 00000100
-    #      & 11111111 11111111 11111111 00000000 
-    #      = 00000001 00000010 00000011 00000000
-    function bincidr () {
-        perl -e '
-            use strict;
-            use warnings;
-            use Socket;
-            my $cidr = shift;
-            my ($net, $mask);
-            my $validBlock = undef;
-            if ($cidr && $cidr =~ m|/|) {
-                ($net, $mask) = (split /\//, $cidr);
-                if ($net =~ /\A(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\Z/) {
-                    if (($1<=255) && ($2<=255) && ($3<=255) && ($4<=255)) {
-                        if ($mask !~ /\D/) {
-                            if ($mask <= 32) {
-                                $validBlock = 1;
-                            }
-                        }
-                    }
-                }
-            }
-            die "Invalid cidr block: "
-                . ($cidr ? $cidr : "NOT SPECIFIED")
-                . " (must be in a.b.c.d/m form)\n"
-                unless $validBlock;
-
-            my $net_n   = inet_aton($net);
-            my $mask_n  = pack "B32", ("1" x $mask . "0" x (32 - $mask));
-            my $final_n = $net_n & $mask_n;
-
-            sub spaceQuad { my $a = shift; return join(".", map {sprintf "%8d", $_} split(/\./, $a)) }
-            print "$cidr :\n", "=" x length($cidr), "\n";
-            print "    Dotted Quad:\n";
-            print " " x 8,            spaceQuad($net), "\n";
-            print " " x 6, "\&", " ", spaceQuad(inet_ntoa($mask_n)), "\n";
-            print " " x 6,  "=", " ", spaceQuad(inet_ntoa($final_n)), "\n";
-            
-            sub spaceBin { my $n = shift; return join(" ", unpack("(B8)*", $n)) }
-            print "    Binary:\n";
-            print " " x 8,            spaceBin($net_n), "\n";
-            print " " x 6, "\&", " ", spaceBin($mask_n), "\n";
-            print " " x 6,  "=", " ", spaceBin($final_n), "\n";
-        ' $1
-    }
-
     ###
     # Functional equivalents to old tcsh aliases and miscellaneous
     # other functions.
@@ -820,74 +763,6 @@ ${Cyan}\!${Color_Off}\
         fi
     }
 
-    ###
-    # In case 'perldoc -l <module>' doesn't work.
-    function pmwhich () {
-        if [[ -n $1 ]]
-        then
-            perl -e \
-               'foreach my $module (@ARGV) {
-                    my $fileName;
-                    ($fileName = $module) =~ s{::}{/}g;
-                    $fileName .= ".pm";
-
-                    my $ok = eval "use $module (); 1";
-
-                    if (defined $ok) {
-                        my $fullPath = $INC{$fileName}  || "(path??)";
-                        my $version  = $module->VERSION || "(??)";
-                        print "$module v$version : $fullPath\n";
-                    }
-                    else {
-                        warn "$module not found or did not load successfully.\n",
-                    }
-                }' $@
-        else
-            echo "Usage: pmwhich <module> [module ...]"
-        fi
-    }
-
-    ###
-    # Given an errno.h error number (via syslog or some such)
-    # print the associated error message.
-    function errno () {
-        if [[ -n $1 ]]
-        then
-            perl -e \
-                    'use English;
-                     my $errno = shift;
-                     if (($errno !~ /\D/) && ($errno >= 0)) {
-                        $OS_ERROR = $errno;
-                        print "$OS_ERROR\n";
-                     }
-                     else {
-                        print "Invalid error number: $errno\n";
-                     }' $1
-        else
-            echo "Usage: errno N"
-        fi
-    }
-
-    ###
-    # What are the atime, mtime, and ctime for a file or files?
-    function ftimes () {
-        if [[ -n $* ]]
-        then
-            for file in $*
-            do
-                perl -e 'my $File = shift;
-                         my ($a, $m, $c) = (stat $File)[8, 9, 10];
-                         print "${File}::\n",
-                               "atime : ", scalar(localtime($a)), "\n",
-                               "mtime : ", scalar(localtime($m)), "\n",
-                               "ctime : ", scalar(localtime($c)), "\n";
-                        ' $file;
-            done
-        else 
-            echo "Please specify a file or files to examine."
-        fi
-    }
-
     # Takes a pattern (that should match Hosts in ~/.ssh/config)
     # and a command to run.  Runs the command on matching Hosts.
     function runon () {
@@ -914,30 +789,6 @@ ${Cyan}\!${Color_Off}\
                 done
             fi
         fi
-    }
-
-    # Show historical package management activities
-    function apt-history () {
-        local dpkgLog="/var/log/dpkg"
-        local sudoIfNeeded=""
-        if [[ ! -r $dpkgLog ]]
-        then
-            sudoIfNeeded="sudo"
-        fi
-        case "$1" in
-            install|upgrade|remove)
-                $sudoIfNeeded grep "$1 " /var/log/dpkg.log
-            ;;
-            rollback)
-                $sudoIfNeeded grep upgrade /var/log/dpkg.log | \
-                grep "$2" -A10000000 | \
-                grep "$3" -B10000000 | \
-                awk '{print $4"="$5}'
-            ;;
-            *)
-                cat /var/log/dpkg.log
-            ;;
-        esac
     }
 
     ###

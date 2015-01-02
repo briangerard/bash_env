@@ -1,0 +1,26 @@
+#!/usr/bin/env perl
+###
+# Given an errno.h error number (via syslog or some such)
+# print the associated error message.
+###
+
+use strict;
+use warnings;
+
+use English qw{ -no_match_vars };
+
+if (scalar(@ARGV)) {
+    ERROR:
+    while (my $errno = shift) {
+        if ( ($errno !~ /\D/) && ($errno >= 0) ) {
+            $OS_ERROR = $errno;
+            print "Error $errno: $OS_ERROR\n";
+        }
+        else {
+            print "Invalid error number: $errno\n";
+        }
+    }
+}
+else {
+    print "Usage: $PROGRAM_NAME N\n";
+}

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# Show historical package management activities
+currLog="/var/log/dpkg.log"
+prevLog="/var/log/dpkg.log.1"
+sudoIfNeeded=""
+
+if [[ ! -r $currLog || ! -r $prevLog ]]
+then
+    sudoIfNeeded="sudo"
+fi
+case "$1" in
+    install|upgrade|remove)
+        $sudoIfNeeded cat $prevLog $currLog | grep "$1 "
+    ;;
+    rollback)
+        $sudoIfNeeded cat $prevLog $currLog | grep upgrade | \
+        grep "$2" -A10000000 | \
+        grep "$3" -B10000000 | \
+        awk '{print $4"="$5}'
+    ;;
+    *)
+        cat $prevLog $currLog
+    ;;
+esac

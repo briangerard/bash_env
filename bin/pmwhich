@@ -1,0 +1,32 @@
+#!/usr/bin/env perl
+###
+# In case 'perldoc -l <module>' doesn't work.
+###
+use strict;
+use warnings;
+
+use English qw{ -no_match_vars };
+
+if (scalar(@ARGV)) {
+    MODULE:
+    while (my $module = shift) {
+
+        my $fileName =  $module;
+        $fileName    =~ s{::}{/}g;
+        $fileName    .= '.pm';
+
+        my $okay = eval "use $module (); 1";
+
+        if (defined $okay) {
+            my $fullPath = $INC{$fileName}  || "(path??)";
+            my $version  = $module->VERSION || "(??)";
+            print "$module v$version : $fullPath\n";
+        }
+        else {
+            warn "$module not found or did not load successfully.\n";
+        }
+    }
+}
+else {
+    print "Usage: $PROGRAM_NAME <module> [module ...]\n";
+}

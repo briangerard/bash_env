@@ -1,6 +1,5 @@
 .ssh
 .vimrc
-bin
 env
 devel
 personal
