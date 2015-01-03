@@ -32,25 +32,6 @@ fi
 # Set up the basic directory structure
 bootstrapStandardDirs
 
-# Figure out which .vimrc we'll be using - without git, Vundle can't do
-# its thing.
-if [[ ${Git:-NO_GIT} = "NO_GIT" ]]
-then
-    if [[ -f ".vimrc.NoVundle" ]]
-    then
-        ln -s .vimrc.NoVundle .vimrc
-    else
-        echo "FATAL: No .vimrc source candidate (.vimrc.NoVundle) available in $WorkingDir"
-        exit 1
-    fi
-elif [[ -f ".vimrc.Vundle" ]]
-then
-    ln -s .vimrc.Vundle .vimrc
-else
-    echo "FATAL: No .vimrc source candidate (.vimrc.Vundle) available in $WorkingDir"
-    exit 1
-fi
-
 # Now get things started.
 syncenv local
 
