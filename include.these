@@ -1,7 +1,9 @@
 .bash_colors
 .bash_env_mgmt
 .bash_local
+.bash_profile
 .bashrc
+.profile
 .ssh/
 .vim/
 .vimrc

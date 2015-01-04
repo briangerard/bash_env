@@ -6,9 +6,12 @@
 if   [[ -f /etc/bashrc ]]
 then
     . /etc/bashrc
-elif [[ -f /etc/bash.bashrc ]]
+fi
+
+if [[ -d "${HOME}/.anyenv" ]]
 then
-    . /etc/bash.bashrc
+    export PATH=$(uniqPath "${HOME}/.anyenv/bin:$PATH")
+    eval "$(anyenv init -)"
 fi
 
 # Grab any local settings
@@ -92,16 +95,6 @@ VMSTATUS=4
 if [[ ${THIS_HOST[$VMSTATUS]} = "IsVM" ]]
 then
     IS_VM=1
-fi
-
-###
-# Once you travel down this $PATH, forever will it dominate your destiny
-export PATH=$(uniqPath "${PATH}:/opt/local/bin:/opt/local/sbin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/X11R6/bin:~/bin:~")
-
-if [[ -d "${HOME}/.rbenv" ]]
-then
-    export PATH=$(uniqPath "${HOME}/.rbenv/bin:$PATH")
-    eval "$(rbenv init -)"
 fi
 
 ###

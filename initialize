@@ -64,47 +64,40 @@ else
     echo "WARNING: Bad syncenv?  No ${HOME}/.vim found."
 fi
 
-# Now on to rbenv, ruby, etc...
+# Now on to anyenv, etc...
 if [[ ${Git:-NO_GIT} != "NO_GIT" ]]
 then
+    ###
+    # Anyenv, so I can get all the other goodies.
+    AnyenvDir="${HOME}/.anyenv"
+    $Git clone https://github.com/riywo/anyenv $AnyenvDir
+    export PATH=${AnyenvDir}/bin:$PATH
+    eval "$(anyenv init -)"
+
+    ###
+    # Ruby: rbenv
+    anyenv install rbenv
+    eval "$(anyenv init -)"
+
     PreferredRubyVersion=2.1.2
-
-    RbenvDir="${HOME}/.rbenv"
-    RbenvCount=$(/bin/ls -A1 $RbenvDir 2> /dev/null | wc -l)
-    if [[ -d $RbenvDir && $RbenvCount -gt 0 ]]
-    then
-        cd $RbenvDir
-        $Git pull --rebase
-    else
-        $Git clone https://github.com/sstephenson/rbenv.git ${RbenvDir}
-    fi
-
-    RubybuildDir="${RbenvDir}/plugins/ruby-build"
-    RubybuildCount=$(/bin/ls -A1 $RubybuildDir 2> /dev/null | wc -l)
-    if [[ -d $RubybuildDir && $RubybuildCount -gt 0 ]]
-    then
-        cd $RubybuildDir
-        $Git pull --rebase
-    else
-        $Git clone https://github.com/sstephenson/ruby-build.git ${RubybuildDir}
-    fi
-
-    # Spin up rbenv so I can install tmuxinator without sudo
-    export PATH=${HOME}/.rbenv/bin:$PATH
-    eval "$(rbenv init -)"
-
-    # Install my preferred ruby version (no-op if already there)...
     rbenv install --skip-existing $PreferredRubyVersion
-
-    # ...and set rbenv to use it by default...
     rbenv global $PreferredRubyVersion
-
-    # ...so that this doesn't fail with permission denied.
-    gem install tmuxinator
-
-    # Now make sure it's runnable from the shell.
     rbenv rehash
 
+    gem install tmuxinator
+
+    ###
+    # Perl: plenv
+    anyenv install plenv
+    eval "$(anyenv init -)"
+
+    PreferredPerlVersion=5.20.1
+    plenv install $PreferredPerlVersion
+    plenv global $PreferredPerlVersion
+    plenv rehash
+
+    plenv install-cpanm
+
 else
-    echo "No git found - skipping rbenv setup."
+    echo "No git found - skipping anyenv setup."
 fi
