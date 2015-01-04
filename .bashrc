@@ -8,12 +8,6 @@ then
     . /etc/bashrc
 fi
 
-if [[ -d "${HOME}/.anyenv" ]]
-then
-    export PATH=$(uniqPath "${HOME}/.anyenv/bin:$PATH")
-    eval "$(anyenv init -)"
-fi
-
 # Grab any local settings
 if [[ -f ${HOME}/.bash_local ]]
 then
@@ -48,6 +42,12 @@ else
             esac
         fi
     }
+fi
+
+if [[ -d "${HOME}/.anyenv" ]]
+then
+    export PATH=$(uniqPath "${HOME}/.anyenv/bin:$PATH")
+    eval "$(anyenv init -)"
 fi
 
 umask 022
