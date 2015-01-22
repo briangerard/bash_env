@@ -35,10 +35,12 @@ bootstrapStandardDirs
 # Now get things started.
 syncenv local
 
-# Assuming we're good to go in .vim land...
-if [[ -d ${HOME}/.vim ]]
+# Now on to Vundle, anyenv, etc...
+if [[ ${Git:-NO_GIT} != "NO_GIT" ]]
 then
-    if [[ ${Git:-NO_GIT} != "NO_GIT" ]]
+
+    # Assuming we're good to go in .vim land...
+    if [[ -d ${HOME}/.vim ]]
     then
         BundleDir="${HOME}/.vim/bundle/Vundle.vim"
         BundleCount=$(/bin/ls -A1 $BundleDir 2> /dev/null | wc -l)
@@ -58,15 +60,9 @@ then
             echo "No vim found - unable to initialize Vundle plugins"
         fi
     else
-        echo "No git found - skipping Vundle setup."
+        echo "WARNING: Bad syncenv?  No ${HOME}/.vim found."
     fi
-else
-    echo "WARNING: Bad syncenv?  No ${HOME}/.vim found."
-fi
 
-# Now on to anyenv, etc...
-if [[ ${Git:-NO_GIT} != "NO_GIT" ]]
-then
     ###
     # Anyenv, so I can get all the other goodies.
     AnyenvDir="${HOME}/.anyenv"
@@ -98,6 +94,26 @@ then
 
     plenv install-cpanm
 
+    ###
+    # Python: pyenv
+    anyenv install pyenv
+    eval "$(anyenv init -)"
+
+    PreferredPythonVersion=2.7.9
+    pyenv install $PreferredPythonVersion
+    pyenv global $PreferredPythonVersion
+    pyenv rehash
+
+    ###
+    # Go: goenv
+    anyenv install goenv
+    eval "$(anyenv init -)"
+
+    PreferredGoVersion=1.3.3
+    goenv install $PreferredGoVersion
+    goenv global $PreferredGoVersion
+    goenv rehash
+
 else
-    echo "No git found - skipping anyenv setup."
+    echo "No git found - skipping Vundle and anyenv setup."
 fi
