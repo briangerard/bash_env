@@ -26,6 +26,9 @@ if filereadable(expand("~/.vim/bundle/Vundle.vim/autoload/vundle.vim"))
     " NERDTree - Excellent directory explorer
     Plugin 'scrooloose/nerdtree'
 
+    " That's a lot of typing to open NERDTree  :)
+    map <c-n> :NERDTree<enter>
+
     """ Other loading examples...
 
     " plugin from http://vim-scripts.org/vim/scripts.html
@@ -93,6 +96,12 @@ colo railscasts
 " prints the error.
 nnoremap <buffer> <silent> X :w<Enter>:!/usr/local/bin/perl -c -MVi::QuickFix %<Enter>
 nnoremap <buffer> <silent> E :cf <Enter>
+
+" Move around split windows with <ctrl>-<movement key> (h, j, k, l)
+map <c-h> <c-w>h
+map <c-j> <c-w>j
+map <c-k> <c-w>k
+map <c-l> <c-w>l
 
 " Line numbers on, please.
 set number
