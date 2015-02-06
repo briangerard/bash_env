@@ -46,7 +46,13 @@ fi
 
 if [[ -d "${HOME}/.anyenv" ]]
 then
-    export PATH=$(uniqPath "${HOME}/.anyenv/bin:$PATH")
+    if [[ $(type -t uniqPath) ]]
+    then
+        export PATH=$(uniqPath "${HOME}/.anyenv/bin:$PATH")
+    else
+        export PATH=${HOME}/.anyenv/bin:${PATH}
+    fi
+
     eval "$(anyenv init -)"
 fi
 
