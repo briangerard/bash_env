@@ -631,19 +631,19 @@ ${Cyan}\!${Color_Off}\
     # other functions.
 
     # 'du -sk' on a directory (or the current directory, if unspecified)
-    function dusk () { du -sk $*; }
+    function dusk () { du -sk "$@"; }
 
     # List files owned by me in the specified directory (or the current directory, if unspecified)
-    function lme  () { ls -ls $* | grep $USER; }
+    function lme  () { ls -ls "$@" | grep $USER; }
 
     # List only regular files in the specified directory (or the current directory, if unspecified)
-    function lstf () { ls -l  $* | grep "^-";  }
+    function lstf () { ls -l  "$@" | grep "^-";  }
 
     # List only directories in the specified directory (or the current directory, if unspecified)
-    function lstd () { ls -l  $* | grep "^d";  }
+    function lstd () { ls -l  "$@" | grep "^d";  }
 
     # List only symlinks in the specified directory (or the current directory, if unspecified)
-    function lstl () { ls -l  $* | grep "^l";  }
+    function lstl () { ls -l  "$@" | grep "^l";  }
 
     # On some hosts, sometimes, connections to technobrat
     # will hang.  This is just a simple wrapper to let
@@ -696,7 +696,7 @@ ${Cyan}\!${Color_Off}\
     # all the time on some bash files.  This makes sure I get
     # the right syntax highlighting.
     function vish () {
-        vi -c "set filetype=sh" $*
+        vi -c "set filetype=sh" "$@"
     }
 
     # New perl script, with the basics in place.
@@ -768,7 +768,7 @@ ${Cyan}\!${Color_Off}\
         if [[ $# -ne 1 && $# -ne 2 ]]
         then
             echo "Usage: runon <pattern> [command]"
-            echo "got $* ($#)"
+            echo "got $@ ($#)"
         else
             if [[ ! -f ${HOME}/.ssh/config ]]
             then

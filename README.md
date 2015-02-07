@@ -1,51 +1,43 @@
-my_env
-========
+# My Home Environment
 
-The common bits of my .bashrc, .vimrc, .vim/*, etc that I've accumulated over
-the years and find myself scp'ing around every time I'm on a new system.  Time
-to put it someplace that makes sense.  :)
+All of the creature comforts I've accrued over the years.  Functions, aliases,
+scripts, vim configs, etc.
 
-Some notable/useful functions and features:
+To spin up a new environment:
 
-<dl>
-<dt><tt>lstd()</tt>, <tt>lstf()</tt>, and <tt>lstl()</tt></dt>
-<dd>List all directories, regular files, and symbolic links in whatever
-directories are specified (or the current directory, with no arguments).
-</dd>
-<dt>
-<dt><tt>bincidr()</tt></dt>
-<dd>Show the binary and dotted-quad representation of the CIDR
-block a.b.c.d/m.
-</dd>
-<dt><tt>i2ip</tt>, <tt>ip2i</tt>, <tt>h2ip</tt>, <tt>ip2h</tt></dt>
-<dd>Convert: an integer to a dotted-quad IP, a dotted-quad IP to an integer,
-an 8-digit hex number to a dotted-quad IP, and a dotted-quad IP to
-an 8-digit hex number.
-</dd>
-<dt><tt>pmwhich()</tt>, <tt>pd</tt>, <tt>pf</tt></dt>
-<dd>Locate a perl module in @INC, short version of 'perldoc', and
-'perldoc -f'.
-</dd>
-<dt><tt>newperl()</tt>, <tt>newpm()</tt></dt>
-<dd>Create a new Perl script or module, with some standard boilerplate
-and open it in $EDITOR
-</dd>
-<dt><tt>sp</tt>, <tt>vp</tt></dt>
-<dd>Source (&quot;.&quot;) or edit ~/env/.bashrc
-</dd>
-<dt><tt>syncenv()</tt></dt>
-<dd>Synchronize my environment from ~/env to a specified host, or just
-to $HOME/, if the target is &quot;local&quot;
-</dd>
-<dt><tt>reSource()</tt></dt>
-<dd>Some of the supporting scripts are set up to avoid potential
-recursive inclusion.  This allows me to re-evaluate them.
-</dd>
-<dt><tt>ftimes()</tt></dt>
-<dd>Show the atime, mtime, and ctime of a file or directory.
-</dd>
-<dt><tt>runon()</tt></dt>
-<dd>Grep for a Host pattern (regex) in ~/.ssh/config, and run a given
-command on each host found.
-</dd>
-</dl>
+```sh
+git clone https://github.com/briangerard/my_env.git env
+cd env
+./initialize
+exec bash -l
+```
+
+Some of my more commonly-used commands:
+
+* Environment management
+   * `syncenv` - Synchronizes my environment from ~/env to a specified host, or
+     just to $HOME/, if the target is "local"
+   * `reSource` - Some of the supporting scripts are set up to avoid potential
+     recursive inclusion.  This allows me to re-evaluate them.
+   * `sp`, `vp` - Source ("."), or edit ~/env/.bashrc
+* Various informative networking-related utilities
+   * `bincidr` - Show the binary and dotted-quad representation of the CIDR
+     block a.b.c.d/m.
+   * `i2ip`, `ip2i`, `h2ip`, `ip2h` - Convert: an integer to a dotted-quad IP, a
+     dotted-quad IP to an integer, an 8-digit hex number to a dotted-quad IP,
+     and a dotted-quad IP to an 8-digit hex number.
+* Development
+   * `ga`, `gc`, `gpl`, `gps` - git add, commit, pull --rebase, and push.
+   * `gd`, `gdc`, `gs`, `gsl` - git diff, diff --cached, status, and short log
+     (with the options I like).
+   * `newperl`, `newpm` - Create a new Perl script or module, with some standard
+     boilerplate and open it in $EDITOR
+* Other favorites
+   * `lstd`, `lstf`, `lstl` - List all directories, regular files, or symbolic
+     links in whatever directories are specified (or the current directory, with
+     no arguments).
+   * `pmwhich`, `pd`, `pf` - Locate a perl module in @INC, and an abbreviation
+     for 'perldoc', and 'perldoc -f'.
+   * `ftimes` - Show the atime, mtime, and ctime of a file or directory.
+   * `runon` - Grep for a Host pattern (regex) in ~/.ssh/config, and run a given
+     command on each host found.

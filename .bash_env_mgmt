@@ -45,7 +45,7 @@ then
     function joinList() {
         local IFS="$1"
         shift
-        echo "$*"
+        echo "$@"
     }
     export -f joinList
 
@@ -233,7 +233,7 @@ then
                 cd $(myPath $ENV_DIR)
 
                 local TargetPath
-                for TargetHost in $*
+                for TargetHost in "$@"
                 do
                     if [[ $TargetHost = "local" ]]
                     then
