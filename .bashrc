@@ -354,6 +354,8 @@ then
         NotARepo='\xf0\x9f\x9a\xab '
         # UTF-8 no entry sign
         GitNotInstalled='\xf0\x9f\x9a\xab '
+        # UTF-8 no entry sign
+        GitPromptDisabled='\xf0\x9f\x9a\xab '
 
     # The rest of these seem to be more universally available; if
     # I don't get my fancy eye candy, I'll at least have something.  :)
