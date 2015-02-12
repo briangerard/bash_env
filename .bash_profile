@@ -1,9 +1,12 @@
-if [[ -e .profile && -r .profile ]]
+MYPROFILE="${HOME}/.profile"
+MYBASHRC="${HOME}/.bashrc"
+
+if [[ -e $MYPROFILE && -r $MYPROFILE ]]
 then
-    source .profile
+    source $MYPROFILE
 fi
 
-if [[ -e .bashrc && -r .bashrc ]]
+if [[ -e $MYBASHRC && -r $MYBASHRC ]]
 then
-    source .bashrc
+    source $MYBASHRC
 fi
