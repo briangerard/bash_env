@@ -215,6 +215,8 @@ then
         . /etc/bash_completion
     fi
 
+    export PERLDOC=-oman
+
     ###
     #
     # /General shell options }
