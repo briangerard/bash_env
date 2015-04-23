@@ -29,6 +29,9 @@ if filereadable(expand("~/.vim/bundle/Vundle.vim/autoload/vundle.vim"))
     " That's a lot of typing to open NERDTree  :)
     map <c-n> :NERDTree<enter>
 
+    " Go go gadget vim!
+    Plugin 'fatih/vim-go'
+
     """ Other loading examples...
 
     " plugin from http://vim-scripts.org/vim/scripts.html
