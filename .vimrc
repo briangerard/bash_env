@@ -108,25 +108,11 @@ map <c-l> <c-w>l
 
 " Line numbers on, please.
 set number
-if v:version > 702
-    " ...and if we can, do relative line numbering - added in v7.3
-    set relativenumber
-endif
 
 " Only do this part when compiled with support for autocommands.
 if has("autocmd") " dnl
  if !exists("autocommands_loaded")
   let autocommands_loaded = 1
-
-  " Relative line numbering - added in v7.3
-  if v:version > 702
-    " Absolute numbers when in insert mode, relative when in command mode
-    " Thanks to
-    " http://jeffkreeftmeijer.com/2012/relative-line-numbers-in-vim-for-super-fast-movement/
-    " for this trick.
-    autocmd InsertEnter * :set relativenumber& number
-    autocmd InsertLeave * :set relativenumber
-  endif
 
   " Enable file type detection.
   " Use the default filetype settings, so that mail gets 'tw' set to 72,
