@@ -32,6 +32,13 @@ if filereadable(expand("~/.vim/bundle/Vundle.vim/autoload/vundle.vim"))
     " Go go gadget vim!
     Plugin 'fatih/vim-go'
 
+    " Lovely status bar
+    Plugin 'bling/vim-airline'
+    set laststatus=2
+
+    " Nice colorscheme, this
+    Plugin 'nanotech/jellybeans.vim'
+
     """ Other loading examples...
 
     " plugin from http://vim-scripts.org/vim/scripts.html
@@ -90,9 +97,10 @@ set t_Co=256
 set t_AB=[48;5;%dm
 set t_AF=[38;5;%dm
 
-" colo nightwish
-" colo desert256
-colo railscasts
+" colorscheme nightwish
+" colorscheme desert256
+" colorscheme jellybeans
+colorscheme railscasts
 
 " Perl syntax checking 'X' in command mode runs perl -c on the current
 " script; 'E' afterwards jumps to the line where an error occurred and
@@ -144,7 +152,7 @@ if has("autocmd") " dnl
     \   exe "normal g`\"" |
     \ endif
   au BufNewFile,BufRead *.i set filetype=swig
-  au BufNewFile,BufRead *.swg set filetype=swig 
+  au BufNewFile,BufRead *.swg set filetype=swig
 
  endif " !exists("autocommands_loaded")
 
