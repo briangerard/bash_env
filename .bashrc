@@ -822,4 +822,10 @@ ${Cyan}\!${Color_Off}\
 
     fi # End - RANDSIG_COND }
 
+    # Final de-duping of the path, after anyenv and friends get finished with it.
+    if [[ $(type -t uniqPath) ]]
+    then
+        export PATH=$(uniqPath $PATH)
+    fi
+
 fi # End if - INTERACTIVE_COND }
