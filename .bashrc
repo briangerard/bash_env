@@ -828,4 +828,10 @@ ${Cyan}\!${Color_Off}\
         export PATH=$(uniqPath $PATH)
     fi
 
+    # Set up the environment for Go, if available
+    if [[ -r ${HOME}/.go_dev_env ]]
+    then
+        source ${HOME}/.go_dev_env
+    fi
+
 fi # End if - INTERACTIVE_COND }
