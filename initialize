@@ -2,8 +2,9 @@
 
 shopt -s nocasematch
 
+###
+# Import the necessary functions and such
 WorkingDir=$(dirname ${BASH_SOURCE[0]})
-
 if [[ -f ${WorkingDir}/.bash_env_mgmt ]]
 then
     . ${WorkingDir}/.bash_env_mgmt
@@ -13,6 +14,29 @@ else
     exit 1
 fi
 
+###
+# See what's wanted.
+if [[ $# -eq 0 ]]
+then
+    WhatToDo="everything"
+else
+    for arg in "$@"
+    do
+        case arg in
+            all)    WhatToDo="everything"        ;;
+            anyenv) WhatToDo="${WhatToDo}anyenv" ;;
+            pyenv)  WhatToDo="${WhatToDo}pyenv"  ;;
+            rbenv)  WhatToDo="${WhatToDo}rbenv"  ;;
+            plenv)  WhatToDo="${WhatToDo}plenv"  ;;
+            goenv)  WhatToDo="${WhatToDo}goenv"  ;;
+            *)      echo "Unknown option: $arg"  ;;
+        esac
+        shift
+    done
+fi
+
+###
+# Find git, which is used in a lot of the rest of the script.
 Git=$(which git 2> /dev/null)
 if [[ $? -ne 0 ]]
 then
@@ -35,10 +59,14 @@ bootstrapStandardDirs
 # Now get things started.
 syncenv local
 
-# Now on to Vundle, anyenv, etc...
+###
+# On to Vundle, anyenv, etc...
+#
+# ...though we can't really do much of anything without git.
 if [[ ${Git:-NO_GIT} != "NO_GIT" ]]
 then
 
+    ###
     # Assuming we're good to go in .vim land...
     if [[ -d ${HOME}/.vim ]]
     then
@@ -65,54 +93,91 @@ then
 
     ###
     # Anyenv, so I can get all the other goodies.
-    AnyenvDir="${HOME}/.anyenv"
-    $Git clone https://github.com/riywo/anyenv $AnyenvDir
-    export PATH=${AnyenvDir}/bin:$PATH
-    eval "$(anyenv init -)"
+    # It is required for installing any of the other "env"s as well,
+    # so if any of those are requested, anyenv comes along also.
+    if [[ $WhatToDo =~ (env|everything) ]]
+    then
+        declare -f anyenv &> /dev/null
+        if [[ $? -ne 0 ]]
+        then
+            AnyenvDir="${HOME}/.anyenv"
+            $Git clone https://github.com/riywo/anyenv $AnyenvDir
+            export PATH=${AnyenvDir}/bin:$PATH
+            eval "$(anyenv init -)"
+        fi
+    fi
 
     ###
     # Ruby: rbenv
-    anyenv install rbenv
-    eval "$(anyenv init -)"
+    if [[ $WhatToDo =~ (rbenv|everything) ]]
+    then
+        declare -f rbenv &> /dev/null
+        if [[ $? -ne 0 ]]
+        then
+            anyenv install rbenv
+            eval "$(anyenv init -)"
 
-    PreferredRubyVersion=2.1.2
-    rbenv install --skip-existing $PreferredRubyVersion
-    rbenv global $PreferredRubyVersion
-    rbenv rehash
+            PreferredRubyVersion=2.1.2
+            rbenv install --skip-existing $PreferredRubyVersion
+            rbenv global $PreferredRubyVersion
+            rbenv rehash
 
-    gem install tmuxinator
+            gem install tmuxinator
+        fi
+    fi
 
     ###
     # Perl: plenv
-    anyenv install plenv
-    eval "$(anyenv init -)"
+    if [[ $WhatToDo =~ (plenv|everything) ]]
+    then
+        declare -f plenv &> /dev/null
+        if [[ $? -ne 0 ]]
+        then
+            anyenv install plenv
+            eval "$(anyenv init -)"
 
-    PreferredPerlVersion=5.20.1
-    plenv install $PreferredPerlVersion
-    plenv global $PreferredPerlVersion
-    plenv rehash
+            PreferredPerlVersion=5.20.1
+            plenv install $PreferredPerlVersion
+            plenv global $PreferredPerlVersion
+            plenv rehash
 
-    plenv install-cpanm
+            plenv install-cpanm
+        fi
+    fi
 
     ###
     # Python: pyenv
-    anyenv install pyenv
-    eval "$(anyenv init -)"
+    if [[ $WhatToDo =~ (pyenv|everything) ]]
+    then
+        declare -f pyenv &> /dev/null
+        if [[ $? -ne 0 ]]
+        then
+            anyenv install pyenv
+            eval "$(anyenv init -)"
 
-    PreferredPythonVersion=2.7.9
-    pyenv install $PreferredPythonVersion
-    pyenv global $PreferredPythonVersion
-    pyenv rehash
+            PreferredPythonVersion=2.7.9
+            pyenv install $PreferredPythonVersion
+            pyenv global $PreferredPythonVersion
+            pyenv rehash
+        fi
+    fi
 
     ###
     # Go: goenv
-    anyenv install goenv
-    eval "$(anyenv init -)"
+    if [[ $WhatToDo =~ (goenv|everything) ]]
+    then
+        declare -f goenv &> /dev/null
+        if [[ $? -ne 0 ]]
+        then
+            anyenv install goenv
+            eval "$(anyenv init -)"
 
-    PreferredGoVersion=1.3.3
-    goenv install $PreferredGoVersion
-    goenv global $PreferredGoVersion
-    goenv rehash
+            PreferredGoVersion=1.4.2
+            goenv install $PreferredGoVersion
+            goenv global $PreferredGoVersion
+            goenv rehash
+        fi
+    fi
 
 else
     echo "No git found - skipping Vundle and anyenv setup."
