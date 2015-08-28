@@ -1,7 +1,7 @@
 .git/
 .gitignore
-exclude.these
-include.these
+rsync-exclude.these
+tar-exclude.these
 initialize
 .bash_local.TEMPLATE
 ChangeLog

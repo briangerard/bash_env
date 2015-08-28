@@ -1,0 +1,8 @@
+.git
+.gitignore
+rsync-exclude.these
+tar-exclude.these
+initialize
+.bash_local.TEMPLATE
+ChangeLog
+README.md

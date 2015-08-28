@@ -67,7 +67,10 @@ then
     # can't export an array variable in bash (see bash(1), under "Bugs").  The
     # practical consequence of that is that child shells (under X, for
     # instance) wouldn't inherit the array, so a number of functions wouldn't
-    # work.
+    # work.  I'm not using a collection of simple variables because i want to
+    # be able to work off of a list of "my standard directories" from time to
+    # time.  Ie - I really want an array of standard dirs; since I can't have
+    # that, this function serves the same purposes.
     function myPath() {
         local thePaths=(
             "bin"
@@ -170,9 +173,6 @@ then
                 if [[ ! -d .ssh ]]
                 then
                     mkdir .ssh
-                else
-                    local sshDirExists
-                    sshDirExists=$(exit 0)
                 fi
                 # Make symlinks to the config and authorized keys
                 # so they'll come along for the ride when syncing.
@@ -196,18 +196,36 @@ then
         else
             status=1
         fi
-        # The real point of this is that it sets $?
-        # - $status is really just a dummy variable
-        # This allows me to test $? after calling
-        # this function and get a meaningful value.
-        if [[ ${status:-0} -eq 1 ]]
-        then 
-            status=$(exit 1)
-        else
-            status=$(exit 0)
-        fi
+
+        return $status
     }
     export -f bootstrapStandardDirs
+
+    ###
+    # Rsync command used by syncenv(), if rsync is available.
+    function rsyncit () {
+        rsync -Lazvv --exclude-from=./rsync-exclude.these ./ $1
+    }
+    export -f rsyncit
+
+    ###
+    # Tar command used by syncenv(), if rsync is NOT available.
+    function tarit () {
+        UntarCommand="tar xvf - -C"
+        if [[ $1 =~ : ]]
+        then
+            Host=$(echo $1 | sed -e 's/\(^[^:][^:]*\).*/\1/')
+            Path=$(echo $1 | sed -e 's/^[^:][^:]*:\(.*\)/\1/')
+            Receiver="ssh $Host '$UntarCommand $Path'"
+        else
+            Receiver="$UntarCommand $1"
+        fi
+
+        # tar's exclude syntax differs slightly from rsync's, hence
+        # the separate exclusion files.
+        tar cvf - -h --exclude-from=./tar-exclude.these ./ | $Receiver
+    }
+    export -f tarit
 
     ###
     # syncenv() syncs my "dot files" and other assorted shell creature comforts
@@ -232,6 +250,16 @@ then
             else
                 cd $(myPath $ENV_DIR)
 
+                ###
+                # Strongly prefer rsync.
+                which rsync &> /dev/null
+                if [[ $? -eq 0 ]]
+                then
+                    SyncCommand="rsyncit"
+                else
+                    SyncCommand="tarit"
+                fi
+
                 local TargetPath
                 for TargetHost in "$@"
                 do
@@ -242,8 +270,11 @@ then
                         TargetPath="${TargetHost}:~/"
                     fi
 
+                    ###
+                    # No need to specify a source; we always sync
+                    # from './' (the env dir) to the target.
                     echo "$TargetHost : "
-                    rsync -Lazvv --include-from=./include.these --exclude-from=./exclude.these ./ $TargetPath
+                    $SyncCommand $TargetPath
                 done
                 cd - &> /dev/null
             fi
