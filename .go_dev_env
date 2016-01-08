@@ -1,0 +1,70 @@
+# vim: set filetype=sh:
+export GOPATH=${HOME}/devel/go
+export PATH=$(uniqPath ${PATH}:${GOPATH}/bin)
+export GO15VENDOREXPERIMENT=1
+
+# Reset GOPATH according to the current directory.  Looks at '.' and all
+# directories above it trying to find one with both a 'pkg' and 'src'
+# subdirectory, on the assumption that that is what GOPATH should be.
+# If multiple candidate directories are found, it asks the user.
+# Once a directory has been picked, it sets GOPATH and alters PATH
+# accordingly.
+# 
+# TODO: Allow the user to set the path explicitly.
+function godot() {
+    local thisdir=$(pwd)
+
+    # "." is always a candidate
+    local -a candidates=(${thisdir})
+
+    # Crawl upward through the filesystem looking for likely
+    # candidates for GOPATH.
+    thisdir=$(dirname $thisdir)
+    while [ $thisdir != "/" ]
+    do
+        if [[ -d "${thisdir}/src" && -d "${thisdir}/pkg" ]]
+        then
+            candidates=("${candidates[@]}" "$thisdir")
+        fi
+        thisdir=$(dirname $thisdir)
+    done
+
+    if [[ ${#candidates[@]} -gt 1 ]]
+    then
+        echo "Multiple candidates found.  Select:"
+        for (( dir=0; dir < ${#candidates[@]}; dir++ ))
+        do
+            echo "    $(($dir+1)). ${candidates[$dir]}"
+        done
+        echo -n "Your choice (1-${#candidates[@]} or c to cancel): "
+        read pick
+        while [[ ($pick != "c" && $pick =~ [^0-9]) || $pick -gt ${#candidates[@]} ]]
+        do
+            echo "Invalid selection.  Must be a number between 1 and ${#candidates[@]} or c to cancel."
+            echo -n "Your choice: "
+            read pick
+        done
+
+        if [[ $pick = "c" ]]
+        then
+            echo "Not changing GOPATH"
+            return
+        fi
+    fi
+
+    if [[ ${#candidates[@]} -gt 0 ]]
+    then
+        newPath=${candidates[$((${pick:-1}-1))]}
+        if [[ -d "${newPath}/src" && -d "${newPath}/pkg" ]]
+        then
+            echo "Setting GOPATH to ${candidates[$((${pick:-1}-1))]}"
+            export GOPATH=${candidates[$((${pick:-1}-1))]}
+            export PATH=$(uniqPath ${PATH}:${GOPATH}/bin)
+        else
+            echo "No suitable GOPATH candidate directories found.  GOPATH unchanged."
+        fi
+    else
+        echo "No suitable GOPATH candidate directories found.  GOPATH unchanged."
+    fi
+
+}
