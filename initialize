@@ -146,8 +146,12 @@ then
     fi
 
     ###
-    # Python: pyenv
-    if [[ $WhatToDo =~ (pyenv|everything) ]]
+    # Python: pyenv - only if explicitly requested
+    #
+    # Not part of "everything" because virtualenvs get me most (if not all)
+    # of what I want, and all sorts of tooling and community support comes
+    # along for the ride.
+    if [[ $WhatToDo =~ (pyenv) ]]
     then
         declare -f pyenv &> /dev/null
         if [[ $? -ne 0 ]]
@@ -155,7 +159,7 @@ then
             anyenv install pyenv
             eval "$(anyenv init -)"
 
-            PreferredPythonVersion=2.7.9
+            PreferredPythonVersion=3.4.2
             pyenv install $PreferredPythonVersion
             pyenv global $PreferredPythonVersion
             pyenv rehash
@@ -172,7 +176,7 @@ then
             anyenv install goenv
             eval "$(anyenv init -)"
 
-            PreferredGoVersion=1.4.2
+            PreferredGoVersion=1.7.3
             goenv install $PreferredGoVersion
             goenv global $PreferredGoVersion
             goenv rehash

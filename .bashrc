@@ -834,4 +834,10 @@ ${Cyan}\!${Color_Off}\
         source ${HOME}/.go_dev_env
     fi
 
+    # Set up for virtualenvwrapper, if available
+    if [[ -r ${HOME}/.virtualenvwrapper_env ]]
+    then
+        source ${HOME}/.virtualenvwrapper_env
+    fi
+
 fi # End if - INTERACTIVE_COND }
