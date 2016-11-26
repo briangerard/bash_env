@@ -457,7 +457,12 @@ then
             if [[ $? = 0 ]]
             then
                 GitStatus="$($GIT status 2> /dev/null)"
-                BranchPattern="^(# )?On branch ([^${IFS}]*)"
+                # The character class at the end used to be $IFS, but
+                # virtualenvwrapper clobbers it under certain conditions,
+                # preventing the pattern from matching and the branch
+                # name from being captured.  Expanding it here to avoid
+                # that issue.
+                BranchPattern="^(# )?On branch ([^ 	]*)"
                 RemotePattern="(# )?Your branch is ([^ ]+) "
                 DivergePattern="(# )?Your branch and (.*) have diverged"
 
