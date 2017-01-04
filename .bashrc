@@ -457,12 +457,6 @@ then
             if [[ $? = 0 ]]
             then
                 GitStatus="$($GIT status 2> /dev/null)"
-                # The character class at the end used to be $IFS, but
-                # virtualenvwrapper clobbers it under certain conditions,
-                # preventing the pattern from matching and the branch
-                # name from being captured.  Expanding it here to avoid
-                # that issue.
-                BranchPattern="^(# )?On branch ([^ 	]*)"
                 RemotePattern="(# )?Your branch is ([^ ]+) "
                 DivergePattern="(# )?Your branch and (.*) have diverged"
 
@@ -491,11 +485,15 @@ then
                     Remote=$Divergent
                 fi
 
-                # Let me know what branch I'm on.
-                if [[ $GitStatus =~ $BranchPattern ]]
-                then
-                    Branch="${BIGreen}${BASH_REMATCH[2]}${Color_Off}"
-                fi
+                # Let me know what branch I'm on.  Formerly handled with a regex,
+                # as with $RemotePattern and $DivergePattern, above.  Unfortunately,
+                # virtualenvwrapper clobbers $IFS under certain conditions, preventing
+                # the pattern from matching and the branch name from being captured.
+                # Without matching against $IFS, or perhaps only when $IFS has been so
+                # clobbered, no amount of expansion of the original value seemed
+                # to match correctly.  Moving to a quick-n-dirty awk command for
+                # now.
+                Branch="${BIGreen}$(echo $GitStatus | awk '{print $3}')${Color_Off}"
 
                 echo -e " (${Branch})${Remote}${State}"
             else
