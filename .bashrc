@@ -311,6 +311,7 @@ then
 
         # Intense colors
         IGreen="${Esc}[0;92m"
+        IBlue="${Esc}[0;94m"
         IPurple="${Esc}[0;95m"
 
         # Bold colors
@@ -318,7 +319,10 @@ then
         BWhite="${Esc}[1;37m"
 
         # Bold Intense colors
+        BIRed="${Esc}[1;91m"
         BIGreen="${Esc}[1;92m"
+        BIYellow="${Esc}[1;93m"
+        BIBlue="${Esc}[1;94m"
     fi
 
     ###
@@ -503,6 +507,15 @@ then
     }
 
     ###
+    # Determine if I'm in a virtualenv and return the formatted name if so.
+    function venvString() {
+        if [[ -n ${VIRTUAL_ENV} ]]
+        then
+            echo -e " ${IBlue}{$(basename $VIRTUAL_ENV)}${Color_Off}"
+        fi
+    }
+
+    ###
     # 
     # This color scheme is largely designed to go well on a terminal with a
     # black (or all-but-black) background and yellow-ish foreground (text).
@@ -517,7 +530,7 @@ then
     # However, potentially, the prompt could end up looking like all of this
     # (also colorized, of course):
     #
-    # #screensession:0# host.im.on[VM] - /my/current/working/directory (git branch)<status icon(s)> : 1234
+    # #screensession:0# host.im.on[VM] - /my/current/working/directory {virtualenv} (git branch)<status icon(s)> : 1234
     # Yes, My Liege? $ 
     #
     # The screen session name is only filled in when I can tell I'm inside a
@@ -525,6 +538,8 @@ then
     #
     # The [VM] tag is only applied when I can determine that I'm in a virtual
     # machine.
+    #
+    # The {virtualenv} will only show up when I'm working in a virtualenv.
     #
     # '1234' will be the current history number (useful for repeating commands,
     # etc).
@@ -535,7 +550,7 @@ then
     function currentPrompt () {
         PS1="${IGreen}${ScreenName:+"#${ScreenName}# "}${BWhite}${THIS_HOST[$SHORTNAME]}${Color_Off}\
 ${IS_VM:+${BRed}[VM]${Color_Off}}${Yellow} - ${Color_Off}\
-${IPurple}\w${Color_Off}$(gitStatusTag)${Yellow} : ${Color_Off}\
+${IPurple}\w${Color_Off}$(venvString)$(gitStatusTag)${Yellow} : ${Color_Off}\
 ${Cyan}\!${Color_Off}\
 \nYes, My Liege? \$ "
 }
