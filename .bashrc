@@ -285,7 +285,17 @@ then
             ScreenName="screen:$(echo $STY | cut -d. -f2)"
         elif [[ -n "$TMUX" ]]
         then
-            ScreenName="tmux:$(basename $TMUX | cut -d, -f1):$(tmux display-message -p '#S')"
+            # For starters, just grab the tmux socket name.
+            ScreenName=$(basename $TMUX | cut -d, -f1)
+
+            # If it's the default socket, there's really no need to call that
+            # out in the prompt; otherwise add it in.
+            if [[ $ScreenName = "default" ]]
+            then
+                ScreenName="tmux:$(tmux display-message -p '#S')"
+            else
+                ScreenName="tmux:${ScreenName}:$(tmux display-message -p '#S')"
+            fi
         else
             ScreenName="unknown"
         fi
