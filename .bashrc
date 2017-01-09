@@ -282,10 +282,10 @@ then
     then
         if [[ -n "$STY" ]]
         then
-            ScreenName=`echo $STY | sed -e 's/[^.][^.]*\.\(.*\)$/\1/'`
+            ScreenName="screen:$(echo $STY | cut -d. -f2)"
         elif [[ -n "$TMUX" ]]
         then
-            ScreenName=`echo $TMUX | sed -e 's/.*\/\([^,][^,]*\),[^,][^,]*,\(.*\)/\1:\2/'`
+            ScreenName="tmux:$(basename $TMUX | cut -d, -f1):$(tmux display-message -p '#S')"
         else
             ScreenName="unknown"
         fi
