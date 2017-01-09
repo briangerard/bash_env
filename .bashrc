@@ -289,7 +289,8 @@ then
             ScreenName=$(basename $TMUX | cut -d, -f1)
 
             # If it's the default socket, there's really no need to call that
-            # out in the prompt; otherwise add it in.
+            # out in the prompt; otherwise add it in.  Note that this tmux
+            # display-message command is only available in tmux-1.2 and later.
             if [[ $ScreenName = "default" ]]
             then
                 ScreenName="tmux:$(tmux display-message -p '#S')"
