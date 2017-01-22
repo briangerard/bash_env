@@ -1,8 +1,12 @@
-export WORKON_HOME=$HOME/devel/.virtualenvs
-export PROJECT_HOME=$HOME/devel
+VIRTUALENVWRAPPER_SH=/usr/local/bin/virtualenvwrapper.sh
 
-export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
-export VIRTUALENVWRAPPER_VIRTUALENV=/usr/bin/virtualenv
-export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
+if [[ -f $VIRTUALENVWRAPPER_SH ]]
+then
+    export WORKON_HOME=$HOME/devel/.virtualenvs
+    export PROJECT_HOME=$HOME/devel
 
-source /usr/local/bin/virtualenvwrapper.sh
+    export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+    export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
+
+    source $VIRTUALENVWRAPPER_SH
+fi
